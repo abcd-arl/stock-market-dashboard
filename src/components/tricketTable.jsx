@@ -1,48 +1,46 @@
+import { Link } from "wouter";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { useGetProfileAndQuoteQuery } from "../redux/finnhub";
+import { useGetProfilesAndQuotesQuery } from "../redux/finnhub";
 import { SOCKET_URL } from "../App";
 import { useState, useEffect } from "react";
+import { formatMarketCap } from "../utils/format";
 import SkeletonLoading from "./skeletonLoading";
 
-export default function TricketTable({ title, companies }) {
-  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
-    SOCKET_URL,
-    { share: true },
-  );
-  const { data, isLoading, isSuccess } = useGetProfileAndQuoteQuery(companies);
+export default function TricketTable({ title, companies, displayError }) {
+  // const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
+  //   SOCKET_URL,
+  //   { share: true },
+  // );
+  const { data, isLoading, isSuccess, isError, error } =
+    useGetProfilesAndQuotesQuery(companies);
   const [trades, setTrades] = useState({});
-  const connectionStatus = {
-    [ReadyState.CONNECTING]: "Connecting",
-    [ReadyState.OPEN]: "Open",
-    [ReadyState.CLOSING]: "Closing",
-    [ReadyState.CLOSED]: "Closed",
-    [ReadyState.UNINSTANTIATED]: "Uninstantiated",
-  }[readyState];
+  // const connectionStatus = {
+  //   [ReadyState.CONNECTING]: "Connecting",
+  //   [ReadyState.OPEN]: "Open",
+  //   [ReadyState.CLOSING]: "Closing",
+  //   [ReadyState.CLOSED]: "Closed",
+  //   [ReadyState.UNINSTANTIATED]: "Uninstantiated",
+  // }[readyState];
 
-  const formatMarketCap = (marketCap) => {
-    if (marketCap < 1) return marketCap.toFixed(3) + "K";
-    if (marketCap < 1000) return marketCap.toFixed(3) + "M";
-    if (marketCap < 1000000) return (marketCap / 1000).toFixed(3) + "B";
-    if (marketCap < 1000000000) return (marketCap / 1000000).toFixed(3) + "T";
-  };
+  // useEffect(() => {
+  //   if (isSuccess && connectionStatus === "Open") {
+  //     companies.forEach((symbol) => {
+  //       sendJsonMessage({ type: "subscribe", symbol: symbol });
+  //     });
+  //   }
+  // }, [isSuccess]);
 
-  useEffect(() => {
-    if (isSuccess && connectionStatus === "Open") {
-      companies.forEach((symbol) => {
-        sendJsonMessage({ type: "subscribe", symbol: symbol });
-      });
-    }
-  }, [isSuccess]);
+  if (isError && error.status == 429) return displayError("429");
 
-  useEffect(() => {
-    if (lastJsonMessage?.type === "trade") {
-      const newTrades = { ...trades };
-      lastJsonMessage.data.forEach((trade) => {
-        newTrades[trade.s] = trade;
-      });
-      setTrades(newTrades);
-    }
-  }, [lastJsonMessage]);
+  // useEffect(() => {
+  //   if (lastJsonMessage?.type === "trade") {
+  //     const newTrades = { ...trades };
+  //     lastJsonMessage.data.forEach((trade) => {
+  //       newTrades[trade.s] = trade;
+  //     });
+  //     setTrades(newTrades);
+  //   }
+  // }, [lastJsonMessage]);
 
   const columnNames = [
     "Company",
@@ -148,23 +146,28 @@ export default function TricketTable({ title, companies }) {
                   key={symbol}
                   className="rounded-full border-y border-gray-100 text-right font-mono last:border-0 hover:bg-gray-50"
                 >
-                  <td className="flex w-52 items-center py-2 pl-5 text-left font-sans">
-                    <img
-                      src={logo}
-                      alt={name}
-                      className="mr-2 h-6 w-6 rounded-full"
-                    />
-                    <div className="flex w-full gap-2">
-                      <h3 className="font-bold">{symbol}</h3>
-                      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">
-                        {name}
-                      </p>
-                    </div>
+                  <td className="w-52 py-2 pl-5 text-left font-sans">
+                    <Link
+                      to={`/profile/${symbol}`}
+                      className="flex w-52 items-center"
+                    >
+                      <img
+                        src={logo}
+                        alt={name}
+                        className="mr-2 h-6 w-6 rounded-full"
+                      />
+                      <div className="flex w-full gap-2">
+                        <h3 className="font-bold">{symbol}</h3>
+                        <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">
+                          {name}
+                        </p>
+                      </div>
+                    </Link>
                   </td>
                   <td className="pl-7">
                     <span
                       key={"current" + change}
-                      className="animate-fade-in ml-auto w-fit"
+                      className="ml-auto w-fit animate-fade-in"
                     >
                       {current}
                     </span>
