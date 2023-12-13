@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { useLazyGetProfileAndQuoteQuery } from "../redux/finnhub";
+import { Link } from "wouter";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import { useLazyGetProfilesAndQuotesQuery } from "../redux/finnhub";
 import { SOCKET_URL } from "../App";
 import useWebSocket from "react-use-websocket";
 import closeButton from "../assets/icons8-close.svg";
@@ -10,10 +11,9 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
     share: true,
   });
   const [trades, setTrades] = useState({});
-  const [trigger, result] = useLazyGetProfileAndQuoteQuery();
+  const [trigger, result] = useLazyGetProfilesAndQuotesQuery();
   const [symbolsData, setSymbolsData] = useState({});
   const [inputValue, setInputValue] = useState("");
-  const [animation, setAnimation] = useState(null);
   const [shouldSave, setShouldSave] = useState({
     initial: false,
     final: false,
@@ -21,26 +21,28 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
 
   function addSymbol(e) {
     e.preventDefault();
-    const newSymbol = e.target[0].value.toUpperCase();
+    const newSymbol = e.target[0].value;
     if (symbols.includes(newSymbol)) return;
     sendJsonMessage({ type: "subscribe", symbol: newSymbol });
     setShouldSave({ initial: true, final: false });
     trigger([newSymbol]);
   }
 
-  function removeSymbol(symbol) {
-    if (!topAndTrendingTickers.has(symbol)) {
-      sendJsonMessage({ type: "unsubscribe", symbol: symbol });
-    }
-
-    const newSymbols = Object.keys(symbolsData)
-      .filter((key) => key != symbol)
-      .reduce((result, key) => {
-        result[key] = symbolsData[key];
-        return result;
-      }, {});
-    setSymbolsData(newSymbols);
-  }
+  const removeSymbol = useCallback(
+    (symbol) => {
+      if (!topAndTrendingTickers.has(symbol)) {
+        sendJsonMessage({ type: "unsubscribe", symbol: symbol });
+      }
+      const newSymbols = Object.keys(symbolsData)
+        .filter((key) => key != symbol)
+        .reduce((result, key) => {
+          result[key] = symbolsData[key];
+          return result;
+        }, {});
+      setSymbolsData(newSymbols);
+    },
+    [symbolsData, topAndTrendingTickers],
+  );
 
   useEffect(() => {
     trigger(symbols);
@@ -61,18 +63,18 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
     }
   }, [result.isFetching, shouldSave.final]);
 
-  useEffect(() => {
-    if (lastJsonMessage?.type === "trade") {
-      const newTrades = { ...trades };
-      lastJsonMessage.data.forEach((trade) => {
-        newTrades[trade.s] = trade;
-      });
-      setTrades(newTrades);
-    }
-  }, [lastJsonMessage]);
+  // useEffect(() => {
+  //   if (lastJsonMessage?.type === "trade") {
+  //     const newTrades = { ...trades };
+  //     lastJsonMessage.data.forEach((trade) => {
+  //       newTrades[trade.s] = trade;
+  //     });
+  //     setTrades(newTrades);
+  //   }
+  // }, [lastJsonMessage]);
 
   return (
-    <div className="sticky top-2 w-full rounded-lg border border-gray-300 pb-6 pt-4 text-[0.8rem] shadow">
+    <div className="h-[calc(100%-170px)] w-full overflow-x-visible rounded-lg border border-gray-300 pb-6 pt-4 text-[0.8rem] shadow">
       <h2 className="mb-3 px-4 text-2xl font-bold">Your Watch List</h2>
       <form onSubmit={addSymbol} className="relative mb-4 flex w-full px-4">
         <input
@@ -90,7 +92,7 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
           >
             <svg
               aria-hidden="true"
-              className="fill-rust-gray inline h-5 w-5 animate-spin text-gray-200 dark:text-gray-300"
+              className="inline h-5 w-5 animate-spin fill-rust-gray text-gray-200 dark:text-gray-300"
               viewBox="0 0 100 101"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -144,58 +146,77 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
             const name = symbolsData[symbol].profile.name;
             const logo = symbolsData[symbol].profile.logo;
             const close = symbolsData[symbol].quote.pc.toFixed(3);
-
             const current = trades[symbol]?.p
               ? trades[symbol]?.p.toFixed(3)
               : symbolsData[symbol].quote.c.toFixed(3);
             const change = (current - close).toFixed(3);
             const percentChange = ((change / close) * 100).toFixed(3);
-
             return (
-              <div
+              <WatchListItem
                 key={symbol}
-                className={`animate-roll-out group relative flex justify-between rounded p-2 transition-all hover:bg-gray-50`}
-              >
-                <button
-                  className="absolute -right-1.5 -top-2 hidden group-hover:block"
-                  onClick={() => removeSymbol(symbol)}
-                >
-                  <img src={closeButton} alt="" className="h-5 w-5" />
-                </button>
-                <div className="flex items-center justify-center">
-                  {change < 0 ? (
-                    <div className="mr-3 text-lg text-red-600">↓</div>
-                  ) : (
-                    <div className="mr-3 text-lg text-green-600">↑</div>
-                  )}
-                  <img
-                    src={logo}
-                    alt={name}
-                    className="mr-3 h-7 w-7 rounded-full"
-                  />
-                  <div className="w-full">
-                    <p className="font-bold">{symbol}</p>
-                    <p className="w-44 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      {name}
-                    </p>
-                  </div>
-                </div>
-                <div
-                  className={`text-right font-mono ${
-                    change < 0 ? "text-red-600" : "text-green-600"
-                  }`}
-                >
-                  <div key={"current" + current} className="animate-fade-in">
-                    {current}
-                    <span className="invisible">)</span>
-                  </div>
-                  <p>
-                    {percentChange}% ({change})
-                  </p>
-                </div>
-              </div>
+                symbol={symbol}
+                name={name}
+                logo={logo}
+                current={current}
+                change={change}
+                percentChange={percentChange}
+                removeSymbol={removeSymbol}
+              />
             );
           })}
+      </div>
+    </div>
+  );
+}
+
+function WatchListItem({
+  symbol,
+  name,
+  logo,
+  current,
+  change,
+  percentChange,
+  removeSymbol,
+}) {
+  return (
+    <div className="group relative flex animate-roll-out justify-between rounded p-2 transition-all hover:bg-gray-50">
+      <button
+        className="absolute -right-1.5 -top-2 hidden group-hover:block"
+        onClick={() => removeSymbol(symbol)}
+      >
+        <img src={closeButton} alt="" className="h-5 w-5" />
+      </button>
+      <div className="flex items-center justify-center">
+        {change < 0 ? (
+          <div className="mr-3 text-lg text-red-600">↓</div>
+        ) : (
+          <div className="mr-3 text-lg text-green-600">↑</div>
+        )}
+        <Link
+          to={`/profile/${symbol}`}
+          className="flex items-center justify-center"
+        >
+          <img src={logo} alt={name} className="mr-3 h-7 w-7 rounded-full" />
+          <div className="w-full">
+            <p className="font-bold">{symbol}</p>
+            <p className="w-44 overflow-hidden overflow-ellipsis whitespace-nowrap">
+              {name}
+            </p>
+          </div>
+        </Link>
+      </div>
+      <div
+        className={`text-right font-mono ${
+          change < 0 ? "text-red-600" : "text-green-600"
+        }`}
+      >
+        <div key={"current" + current} className="animate-fade-in">
+          {current}
+          <span className="invisible">&#41;</span>
+        </div>
+        <p>
+          {percentChange}% ({change})
+        </p>
       </div>
     </div>
   );
