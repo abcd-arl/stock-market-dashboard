@@ -23,10 +23,10 @@ export default function DateTimeDisplay() {
   });
 
   return (
-    <div className="to-rust-gray from-willow-gray rounded-lg border bg-gradient-to-r text-white">
-      <div className="h-full w-full rounded-lg border border-white/90 bg-white/10 px-2 py-3 backdrop-blur-md">
-        <div className="m-auto w-fit font-mono text-2xl">{time}</div>
-        <div className="m-auto w-fit text-base font-bold">{date}</div>
+    <div className="rounded-lg border bg-gradient-to-r from-willow-gray to-rust-gray text-white">
+      <div className="h-full w-full rounded-lg border border-white/90 bg-white/10 px-2 py-4 backdrop-blur-md">
+        <div className="m-auto w-fit font-mono text-4xl">{time}</div>
+        <div className="m-auto w-fit text-xl font-semibold">{date}</div>
       </div>
     </div>
   );
