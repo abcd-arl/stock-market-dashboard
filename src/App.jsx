@@ -1,4 +1,7 @@
+import { Switch, Route } from "wouter";
 import Home from "./pages/home";
+import Profile from "./pages/profile";
+import Error from "./pages/error";
 import DateTimeDisplay from "./components/datetimeDisplay";
 import SearchBox from "./components/searchBox";
 import WatchList from "./components/watchList";
@@ -24,9 +27,19 @@ function App() {
   return (
     <div className="relative m-auto flex max-w-[1700px] gap-1.5 p-2 text-zinc-700">
       <main className="w-[75%] space-y-1.5">
-        <Home />
+        <Switch>
+          <Route path="/">
+            <Home />{" "}
+          </Route>
+          <Route path="/profile/:symbol">
+            {(params) => <Profile symbol={params.symbol} />}
+          </Route>
+          <Route>
+            <Error type={"404"} />
+          </Route>
+        </Switch>
       </main>
-      <aside className="relative flex w-[25%] flex-col gap-1.5">
+      <aside className="sticky bottom-2 top-2 flex h-screen w-[25%] flex-col gap-1.5">
         <SearchBox />
         <DateTimeDisplay />
         <WatchList
