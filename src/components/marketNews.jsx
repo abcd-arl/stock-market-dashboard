@@ -1,8 +1,10 @@
 import { useGetMarketNewsQuery } from "../redux/finnhub";
 import SkeletonLoading from "./skeletonLoading";
 
-export default function MarketNews() {
-  const { data, error, isLoading } = useGetMarketNewsQuery();
+export default function MarketNews({ displayError }) {
+  const { data, isError, error, isLoading } = useGetMarketNewsQuery();
+
+  if (isError && error.status == 429) return displayError("429");
 
   const formatDatetime = (datetime) => {
     const now = new Date();
@@ -21,7 +23,7 @@ export default function MarketNews() {
   };
 
   return (
-    <div className="rounded-md border border-gray-300 px-8 py-4 text-[0.8rem]">
+    <div className="rounded-md border border-gray-300 px-8 py-4 text-[0.8rem] shadow">
       <h2 className="mb-6 text-2xl font-bold">Market News</h2>
       <div className="flex flex-col gap-5 pr-16">
         {isLoading &&
@@ -53,7 +55,7 @@ export default function MarketNews() {
               </div>
             ))}
         {!isLoading &&
-          data.map((article) => (
+          data.slice(0, 8).map((article) => (
             <a
               key={article.id}
               href={article.url}
