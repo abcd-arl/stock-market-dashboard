@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.last-two-children > *:nth-last-child(-n + 2) {
+  @apply border-b-0 pb-0;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
