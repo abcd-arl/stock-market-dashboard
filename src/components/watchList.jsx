@@ -7,9 +7,9 @@ import closeButton from "../assets/icons8-close.svg";
 import SkeletonLoading from "./skeletonLoading";
 
 export default function WatchList({ symbols, topAndTrendingTickers }) {
-  const { sendJsonMessage, lastJsonMessage } = useWebSocket(SOCKET_URL, {
-    share: true,
-  });
+  // const { sendJsonMessage, lastJsonMessage } = useWebSocket(SOCKET_URL, {
+  //   share: true,
+  // });
   const [trades, setTrades] = useState({});
   const [trigger, result] = useLazyGetProfilesAndQuotesQuery();
   const [symbolsData, setSymbolsData] = useState({});
@@ -48,9 +48,9 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
     trigger(symbols);
     if (result.isSuccess)
       setSymbolsData((prev) => ({ ...prev, ...result.data }));
-    symbols.forEach((symbol) => {
-      sendJsonMessage({ type: "subscribe", symbol: symbol });
-    });
+    // symbols.forEach((symbol) => {
+    //   sendJsonMessage({ type: "subscribe", symbol: symbol });
+    // });
   }, [result.isSuccess]);
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
   // }, [lastJsonMessage]);
 
   return (
-    <div className="h-[calc(100%-170px)] w-full overflow-x-visible rounded-lg border border-gray-300 pb-6 pt-4 text-[0.8rem] shadow">
+    <div className="h-[calc(100%-150px)] w-full rounded-lg border border-gray-300 pb-6 pt-4 text-[0.8rem] shadow">
       <h2 className="mb-3 px-4 text-2xl font-bold">Your Watch List</h2>
       <form onSubmit={addSymbol} className="relative mb-4 flex w-full px-4">
         <input
@@ -116,54 +116,56 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
           />
         )}
       </form>
-      <div className="mx-2">
-        {result.isLoading &&
-          Array(10)
-            .fill()
-            .map((_, index) => (
-              <div key={index} className="flex justify-between px-2 py-3">
-                <div className="flex items-center">
-                  <SkeletonLoading className="mr-4 h-2.5 w-2.5" />
-                  <SkeletonLoading className="mr-3 h-7 w-7 rounded-full" />
-                  <div className="flex flex-col gap-2">
-                    <SkeletonLoading className="h-2 w-24" />
-                    <SkeletonLoading className="h-2 w-32" />
+      <div className="mb-2 h-[calc(100%-75px)] overflow-y-auto">
+        <div className="mb-5 ml-2 mr-2.5 mt-2">
+          {result.isLoading &&
+            Array(10)
+              .fill()
+              .map((_, index) => (
+                <div key={index} className="flex justify-between px-2 py-3">
+                  <div className="flex items-center">
+                    <SkeletonLoading className="mr-4 h-2.5 w-2.5" />
+                    <SkeletonLoading className="mr-3 h-7 w-7 rounded-full" />
+                    <div className="flex flex-col gap-2">
+                      <SkeletonLoading className="h-2 w-24" />
+                      <SkeletonLoading className="h-2 w-32" />
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end justify-center gap-2">
+                    <div>
+                      <SkeletonLoading className="h-2 w-24" />
+                    </div>
+                    <div className="flex gap-2">
+                      <SkeletonLoading className="h-2 w-16" />
+                      <SkeletonLoading className="h-2 w-16" />
+                    </div>
                   </div>
                 </div>
-                <div className="flex flex-col items-end justify-center gap-2">
-                  <div>
-                    <SkeletonLoading className="h-2 w-24" />
-                  </div>
-                  <div className="flex gap-2">
-                    <SkeletonLoading className="h-2 w-16" />
-                    <SkeletonLoading className="h-2 w-16" />
-                  </div>
-                </div>
-              </div>
-            ))}
-        {!result.isLoading &&
-          Object.keys(symbolsData).map((symbol, index) => {
-            const name = symbolsData[symbol].profile.name;
-            const logo = symbolsData[symbol].profile.logo;
-            const close = symbolsData[symbol].quote.pc.toFixed(3);
-            const current = trades[symbol]?.p
-              ? trades[symbol]?.p.toFixed(3)
-              : symbolsData[symbol].quote.c.toFixed(3);
-            const change = (current - close).toFixed(3);
-            const percentChange = ((change / close) * 100).toFixed(3);
-            return (
-              <WatchListItem
-                key={symbol}
-                symbol={symbol}
-                name={name}
-                logo={logo}
-                current={current}
-                change={change}
-                percentChange={percentChange}
-                removeSymbol={removeSymbol}
-              />
-            );
-          })}
+              ))}
+          {!result.isLoading &&
+            Object.keys(symbolsData).map((symbol) => {
+              const name = symbolsData[symbol].profile.name;
+              const logo = symbolsData[symbol].profile.logo;
+              const close = symbolsData[symbol].quote.pc.toFixed(3);
+              const current = trades[symbol]?.p
+                ? trades[symbol]?.p.toFixed(3)
+                : symbolsData[symbol].quote.c.toFixed(3);
+              const change = (current - close).toFixed(3);
+              const percentChange = ((change / close) * 100).toFixed(3);
+              return (
+                <WatchListItem
+                  key={symbol}
+                  symbol={symbol}
+                  name={name}
+                  logo={logo}
+                  current={current}
+                  change={change}
+                  percentChange={percentChange}
+                  removeSymbol={removeSymbol}
+                />
+              );
+            })}
+        </div>
       </div>
     </div>
   );
@@ -194,7 +196,7 @@ function WatchListItem({
         )}
         <Link
           to={`/profile/${symbol}`}
-          className="flex items-center justify-center"
+          className="flex w-fit items-center justify-center"
         >
           <img src={logo} alt={name} className="mr-3 h-7 w-7 rounded-full" />
           <div className="w-full">

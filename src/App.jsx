@@ -29,7 +29,7 @@ function App() {
       <main className="w-[75%] space-y-1.5">
         <Switch>
           <Route path="/">
-            <Home />{" "}
+            <Home />
           </Route>
           <Route path="/profile/:symbol">
             {(params) => <Profile symbol={params.symbol} />}
@@ -39,7 +39,7 @@ function App() {
           </Route>
         </Switch>
       </main>
-      <aside className="sticky bottom-2 top-2 flex h-screen w-[25%] flex-col gap-1.5">
+      <aside className="sticky top-2 h-[calc(100vh-1.25rem)] w-[25%] flex-col justify-start space-y-1.5">
         <SearchBox />
         <DateTimeDisplay />
         <WatchList
