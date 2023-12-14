@@ -13,7 +13,6 @@ export default function CompanyNews({ symbol }) {
     to: toDateStr,
   });
 
-  console.log(isLoading, isFetching);
   return (
     <div className="w-full py-2">
       <h1 className="my-4 text-2xl font-bold">Company News</h1>
@@ -38,12 +37,12 @@ export default function CompanyNews({ symbol }) {
             .map((article) => (
               <div
                 key={article.id}
-                className="mb-1 cursor-pointer border-b pb-3 last:pb-0"
+                className="mb-1 flex cursor-pointer flex-col-reverse items-start justify-end border-b pb-3 last:pb-0"
               >
                 <h2 className="mr-1 text-sm font-semibold">
                   {article.headline}
                 </h2>
-                <p className="inline text-xs">
+                <p className="mb-2 inline text-xs">
                   <span className="">{article.source}</span> |{" "}
                   <span>
                     {new Date(article.datetime * 1000).toLocaleDateString(
