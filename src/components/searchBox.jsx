@@ -34,7 +34,7 @@ export default function SearchBox() {
       <input
         className="block w-full rounded-md border border-gray-300 bg-transparent py-2 pl-8 pr-2 text-sm shadow focus:border-zinc-500 focus:ring-zinc-500"
         type="text"
-        placeholder="Search a symbol"
+        placeholder="Enter a symbol to visit its profile"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value.toUpperCase())}
       />
