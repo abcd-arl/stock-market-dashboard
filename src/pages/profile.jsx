@@ -22,8 +22,6 @@ export default function Profile({ symbol }) {
     grouping: "industry",
   });
 
-  console.log(peers);
-
   if (isLoading || isFetching || peersIsLoading || peersIsFetching)
     return (
       <div className="flex h-[calc(100vh-16px)] flex-col items-center justify-center rounded-md border border-gray-300 shadow">
