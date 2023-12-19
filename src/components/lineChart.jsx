@@ -29,13 +29,13 @@ ChartJS.register(
 );
 
 export default function LineChart({ symbol }) {
-  // const {
-  //   data: response,
-  //   isLoading,
-  //   isFetching,
-  //   isError,
-  //   error,
-  // } = useGetDailyHistoricalDataQuery(symbol);
+  const {
+    data: response,
+    isLoading,
+    isFetching,
+    isError,
+    error,
+  } = useGetDailyHistoricalDataQuery(symbol);
 
   const [numOfMonths, setNumOfMonths] = useState(6);
 
@@ -47,8 +47,8 @@ export default function LineChart({ symbol }) {
     setNumOfMonths(6);
   }, [symbol]);
 
-  const isLoading = false;
-  const isFetching = false;
+  // const isLoading = false;
+  // const isFetching = false;
   if (isLoading || isFetching) {
     return (
       <div className="w-full rounded-md">

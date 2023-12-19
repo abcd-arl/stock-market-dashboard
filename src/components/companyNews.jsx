@@ -23,11 +23,10 @@ export default function CompanyNews({ symbol }) {
             .fill()
             .map((_, index) => (
               <div key={index} className="mb-1 border-b pb-3">
-                <div>
-                  <SkeletonLoading className="mb-1 h-2 w-full" />
-                  <SkeletonLoading className="mb-2 h-2 w-full" />
-                </div>
-                <SkeletonLoading className="h-2 w-1/4" />
+                <SkeletonLoading className="mb-2 h-2 w-1/4" />
+
+                <SkeletonLoading className="mb-1 h-2 w-full" />
+                <SkeletonLoading className="mb-2 h-2 w-full" />
               </div>
             ))}
         {!isLoading &&

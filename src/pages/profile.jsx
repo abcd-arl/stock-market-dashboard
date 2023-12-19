@@ -25,7 +25,7 @@ export default function Profile({ symbol }) {
   if (isLoading || isFetching || peersIsLoading || peersIsFetching)
     return (
       <div className="flex h-[calc(100vh-16px)] flex-col items-center justify-center rounded-md border border-gray-300 shadow">
-        <img src={Spinner} alt="Loading" className="h-9 w-9" />
+        <img src={Spinner} alt="Loading" className="h-8 w-8" />
       </div>
     );
   if (isError && error.status == 403) return <Error type={"403"} />;

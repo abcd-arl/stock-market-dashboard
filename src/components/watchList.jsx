@@ -18,6 +18,7 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
     initial: false,
     final: false,
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const symbolsData = {
     MARA: {
@@ -290,141 +291,6 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
         t: 1702565969,
       },
     },
-    PLUG: {
-      profile: {
-        country: "US",
-        currency: "USD",
-        estimateCurrency: "USD",
-        exchange: "NASDAQ NMS - GLOBAL MARKET",
-        finnhubIndustry: "Electrical Equipment",
-        ipo: "1999-10-28",
-        logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/PLUG.svg",
-        marketCapitalization: 2609.714962,
-        name: "Plug Power Inc",
-        phone: "15187827700",
-        shareOutstanding: 605.5,
-        ticker: "PLUG",
-        weburl: "https://www.plugpower.com/",
-      },
-      quote: {
-        c: 4.8512,
-        d: 0.5412,
-        dp: 12.5568,
-        h: 4.91,
-        l: 4.5799,
-        o: 4.58,
-        pc: 4.31,
-        t: 1702565969,
-      },
-    },
-    PLUG: {
-      profile: {
-        country: "US",
-        currency: "USD",
-        estimateCurrency: "USD",
-        exchange: "NASDAQ NMS - GLOBAL MARKET",
-        finnhubIndustry: "Electrical Equipment",
-        ipo: "1999-10-28",
-        logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/PLUG.svg",
-        marketCapitalization: 2609.714962,
-        name: "Plug Power Inc",
-        phone: "15187827700",
-        shareOutstanding: 605.5,
-        ticker: "PLUG",
-        weburl: "https://www.plugpower.com/",
-      },
-      quote: {
-        c: 4.8512,
-        d: 0.5412,
-        dp: 12.5568,
-        h: 4.91,
-        l: 4.5799,
-        o: 4.58,
-        pc: 4.31,
-        t: 1702565969,
-      },
-    },
-    A: {
-      profile: {
-        country: "US",
-        currency: "USD",
-        estimateCurrency: "USD",
-        exchange: "NASDAQ NMS - GLOBAL MARKET",
-        finnhubIndustry: "Electrical Equipment",
-        ipo: "1999-10-28",
-        logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/PLUG.svg",
-        marketCapitalization: 2609.714962,
-        name: "Plug Power Inc",
-        phone: "15187827700",
-        shareOutstanding: 605.5,
-        ticker: "PLUG",
-        weburl: "https://www.plugpower.com/",
-      },
-      quote: {
-        c: 4.8512,
-        d: 0.5412,
-        dp: 12.5568,
-        h: 4.91,
-        l: 4.5799,
-        o: 4.58,
-        pc: 4.31,
-        t: 1702565969,
-      },
-    },
-    B: {
-      profile: {
-        country: "US",
-        currency: "USD",
-        estimateCurrency: "USD",
-        exchange: "NASDAQ NMS - GLOBAL MARKET",
-        finnhubIndustry: "Electrical Equipment",
-        ipo: "1999-10-28",
-        logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/PLUG.svg",
-        marketCapitalization: 2609.714962,
-        name: "Plug Power Inc",
-        phone: "15187827700",
-        shareOutstanding: 605.5,
-        ticker: "PLUG",
-        weburl: "https://www.plugpower.com/",
-      },
-      quote: {
-        c: 4.8512,
-        d: 0.5412,
-        dp: 12.5568,
-        h: 4.91,
-        l: 4.5799,
-        o: 4.58,
-        pc: 4.31,
-        t: 1702565969,
-      },
-    },
-    C: {
-      profile: {
-        country: "US",
-        currency: "USD",
-        estimateCurrency: "USD",
-        exchange: "NASDAQ NMS - GLOBAL MARKET",
-        finnhubIndustry: "Electrical Equipment",
-        ipo: "1999-10-28",
-        logo: "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/PLUG.svg",
-        marketCapitalization: 2609.714962,
-        name: "Plug Power Inc",
-        phone: "15187827700",
-        shareOutstanding: 605.5,
-        ticker: "PLUG",
-        weburl: "https://www.plugpower.com/",
-      },
-      quote: {
-        c: 4.8512,
-        d: 0.5412,
-        dp: 12.5568,
-        h: 4.91,
-        l: 4.5799,
-        o: 4.58,
-        pc: 4.31,
-        t: 1702565969,
-      },
-    },
   };
 
   function addSymbol(e) {
@@ -482,10 +348,11 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
   // }, [lastJsonMessage]);
 
   return (
-    <div className="h-[calc(100%-150px)] w-full rounded-lg border border-gray-300 text-[0.8rem] shadow lg:pt-4">
+    <div className="w-full rounded-lg border border-gray-300 text-[0.8rem] shadow lg:h-[calc(100%-150px)] lg:pt-4">
       <h2 className="mb-3 hidden px-4 text-2xl font-bold lg:block">
         Your Watch List
       </h2>
+
       <form
         onSubmit={addSymbol}
         className="relative mb-4 hidden w-full px-4 lg:flex"
@@ -529,33 +396,61 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
           />
         )}
       </form>
-      <div className="h-fit overflow-y-auto lg:mb-2 lg:h-[calc(100%-110px)]">
+      <div className="overflow-y-auto lg:mb-2 lg:h-[calc(100%-110px)]">
         <div className="mb-2 ml-2 mr-2.5 mt-2 flex gap-4 lg:block lg:gap-0">
-          {result.isLoading &&
+          {isLoading &&
             Array(10)
               .fill()
               .map((_, index) => (
-                <div key={index} className="flex justify-between px-2 py-3">
-                  <div className="flex items-center">
-                    <SkeletonLoading className="mr-4 h-2.5 w-2.5" />
-                    <SkeletonLoading className="mr-3 h-7 w-7 rounded-full" />
-                    <div className="flex flex-col gap-2">
-                      <SkeletonLoading className="h-2 w-24" />
-                      <SkeletonLoading className="h-2 w-32" />
+                <div
+                  key={index}
+                  className="group relative flex items-center justify-between rounded px-2 py-3"
+                >
+                  <div className="flex items-center justify-center gap-3 lg:mr-0">
+                    <div className="hidden shrink-0 basis-3.5 text-lg lg:block">
+                      <SkeletonLoading className="mr-1 h-2.5 w-2.5" />
+                    </div>
+                    <div className="flex w-fit items-center justify-center">
+                      <div className="hidden h-7 shrink-0 basis-7 rounded-full lg:block">
+                        <SkeletonLoading className="mr-3 h-7 w-7 rounded-full" />
+                      </div>
+                      <div className="w-full space-y-1.5">
+                        <SkeletonLoading className="mr-2 h-2 w-16" />
+                        <SkeletonLoading className="hidden h-2 w-28 xl:block" />
+                      </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end justify-center gap-2">
-                    <div>
+                  <div className="flex flex-col items-end justify-end gap-1.5">
+                    <div className="text-right">
                       <SkeletonLoading className="h-2 w-24" />
                     </div>
-                    <div className="flex gap-2">
+                    <div className="hidden gap-2 text-right lg:flex">
                       <SkeletonLoading className="h-2 w-16" />
                       <SkeletonLoading className="h-2 w-16" />
                     </div>
                   </div>
                 </div>
+                // <div key={index} className="flex justify-between px-2 py-3">
+                //   <div className="flex items-center">
+                //     <SkeletonLoading className="mr-4 h-2.5 w-2.5" />
+                //     <SkeletonLoading className="mr-3 h-7 w-7 rounded-full" />
+                //     <div className="flex flex-col gap-2">
+                //       <SkeletonLoading className="h-2 w-24" />
+                //       <SkeletonLoading className="h-2 w-32" />
+                //     </div>
+                //   </div>
+                //   <div className="flex flex-col items-end justify-center gap-2">
+                //     <div>
+                //       <SkeletonLoading className="h-2 w-24" />
+                //     </div>
+                //     <div className="flex gap-2">
+                //       <SkeletonLoading className="h-2 w-16" />
+                //       <SkeletonLoading className="h-2 w-16" />
+                //     </div>
+                //   </div>
+                // </div>
               ))}
-          {!result.isLoading &&
+          {!isLoading &&
             Object.keys(symbolsData).map((symbol) => {
               const name = symbolsData[symbol].profile.name;
               const logo = symbolsData[symbol].profile.logo;
@@ -594,33 +489,35 @@ function WatchListItem({
   removeSymbol,
 }) {
   return (
-    <div className="group relative flex animate-roll-out justify-between rounded p-2 transition-all hover:bg-gray-50">
+    <div className="group relative flex justify-between rounded p-2 transition-all hover:bg-gray-50">
       <button
         className="absolute -right-1.5 -top-2 hidden group-hover:block"
         onClick={() => removeSymbol(symbol)}
       >
         <img src={closeButton} alt="" className="h-5 w-5" />
       </button>
-      <div className="mr-3 flex items-center justify-center lg:mr-0">
-        <div className="mr-3 hidden basis-3.5 text-lg lg:block">
+      <div className="flex items-center justify-center gap-3 lg:mr-0">
+        <div className="hidden shrink-0 basis-3.5 text-lg lg:block">
           {change < 0 ? (
-            <span className="text-red-600">↓</span>
+            <div className="text-red-600">↓</div>
           ) : (
-            <span className="text-green-600">↑</span>
+            <div className="text-green-600">↑</div>
           )}
         </div>
         <Link
           to={`/profile/${symbol}`}
           className="flex w-fit items-center justify-center"
         >
-          <img
-            src={logo}
-            alt={name}
-            className="mr-3 hidden h-7 w-7 rounded-full lg:inline-block"
-          />
+          <div className="mr-3 hidden h-7 shrink-0 basis-7 rounded-full bg-gray-300 lg:block">
+            <img
+              src={logo}
+              alt={name}
+              className="hidden h-7 w-7 rounded-full lg:inline-block"
+            />
+          </div>
           <div className="w-full">
-            <p className="font-bold">{symbol}</p>
-            <p className="hidden w-32 overflow-hidden overflow-ellipsis whitespace-nowrap xl:block">
+            <p className="mr-3 font-bold">{symbol}</p>
+            <p className="hidden w-28 overflow-hidden overflow-ellipsis whitespace-nowrap xl:block">
               {name}
             </p>
           </div>

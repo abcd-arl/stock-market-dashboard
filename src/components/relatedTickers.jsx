@@ -5,6 +5,7 @@ import {
   useLazyGetPeersProfilesAndQuotesQuery,
 } from "../redux/finnhub";
 import { useEffect, useState } from "react";
+import SkeletonLoading from "./skeletonLoading";
 
 export default function RelatedTickers({ symbol }) {
   const [relatedTickers, setRelatedTickers] = useState({});
@@ -55,9 +56,6 @@ export default function RelatedTickers({ symbol }) {
     }
   }, [peersProfilesAndQuotes]);
 
-  console.log("peers", peersToGet);
-  console.log("relatedTickers", relatedTickers);
-
   function loadMorePeers(limit = 2) {
     getPeersProfilesAndQuotes({
       symbol,
@@ -66,8 +64,85 @@ export default function RelatedTickers({ symbol }) {
     });
   }
 
+  const SkeletonItem = () => (
+    <div className="grid grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] gap-2 border-b py-1.5 font-mono text-sm hover:bg-gray-100 md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] xl:grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr]">
+      <div className="pl-2">
+        <div className="flex items-center gap-2">
+          <div className="h-6 w-6">
+            <SkeletonLoading className="h-full w-full rounded-full" />
+          </div>
+          <div className="flex gap-2">
+            <SkeletonLoading className="h-2 w-10" />
+          </div>
+        </div>
+      </div>
+      <div className={"flex items-center justify-end"}>
+        <SkeletonLoading className="h-2 w-10" />
+      </div>
+      <div className="flex items-center justify-end">
+        <SkeletonLoading className="h-2 w-10" />
+      </div>
+      <div className="flex items-center justify-end md:pr-2 xl:pr-0">
+        <SkeletonLoading className="h-2 w-10" />
+      </div>
+      <div className="flex items-center justify-end pr-2 md:hidden xl:flex">
+        <SkeletonLoading className="h-2 w-10" />
+      </div>
+    </div>
+  );
+
   if (peersIsLoading || peersProfilesAndQuotesIsLoading)
-    return <div>Loading...</div>;
+    return (
+      <div className="mt-10">
+        <div className="flex items-start justify-between">
+          <h3 className="mb-5 text-xs font-bold uppercase text-zinc-500">
+            Companies on the Same Industry
+          </h3>
+        </div>
+        <div className="grid grid-cols-1 gap-x-3 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+          <div className="grid grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] gap-2 border-b pb-1.5 text-right text-xs md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] xl:grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr]">
+            <div className="pl-2 text-left">
+              <SkeletonLoading className="h-2 w-10" />
+            </div>
+            <div className="flex  items-center justify-end">
+              <SkeletonLoading className="h-2 w-10" />
+            </div>
+            <div className={"flex items-center justify-end"}>
+              <SkeletonLoading className="h-2 w-10" />
+            </div>
+            <div className="flex items-center justify-end md:pr-2 xl:pr-0">
+              <SkeletonLoading className="h-2 w-10" />
+            </div>
+            <div className="flex items-center justify-end pr-2 md:hidden xl:flex">
+              <SkeletonLoading className="h-2 w-10" />
+            </div>
+          </div>
+          <div className="hidden grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] gap-2 border-b pb-1.5 text-right text-xs md:grid md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] xl:hidden xl:grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] 2xl:grid">
+            <div className="pl-2 text-left">
+              <SkeletonLoading className="h-2 w-10" />
+            </div>
+            <div className="flex  items-center justify-end">
+              <SkeletonLoading className="h-2 w-10" />
+            </div>
+            <div className={"flex items-center justify-end"}>
+              <SkeletonLoading className="h-2 w-10" />
+            </div>
+            <div className="flex items-center justify-end md:pr-2 xl:pr-0">
+              <SkeletonLoading className="h-2 w-10" />
+            </div>
+            <div className="flex items-center justify-end pr-2 md:hidden xl:flex">
+              <SkeletonLoading className="h-2 w-10" />
+            </div>
+          </div>
+          {Array(4)
+            .fill()
+            .map((_, index) => (
+              <SkeletonItem key={index} />
+            ))}
+        </div>
+      </div>
+    );
+
   if (peersError) return <div>Oh no, there was an error</div>;
   if (peersToGet.length === 0 && Object.keys(relatedTickers).length === 0)
     return;
@@ -194,6 +269,12 @@ export default function RelatedTickers({ symbol }) {
             </div>
           );
         })}
+        {peersProfilesAndQuotesIsFetching && (
+          <>
+            <SkeletonItem />
+            <SkeletonItem />
+          </>
+        )}
       </div>
     </div>
   );

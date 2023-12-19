@@ -7,6 +7,7 @@ import { formatMarketCap } from "../utils/format";
 import SkeletonLoading from "./skeletonLoading";
 
 export default function TricketTable({ title, companies, displayError }) {
+  // const [isLoading, setIsLoading] = useState(true);
   // const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(
   //   SOCKET_URL,
   //   { share: true },
@@ -167,7 +168,7 @@ export default function TricketTable({ title, companies, displayError }) {
     },
   };
   const data = trades;
-  const isLoading = true;
+  const isLoading = false;
   const isSuccess = true;
   const isError = false;
   const error = {};
@@ -185,78 +186,90 @@ export default function TricketTable({ title, companies, displayError }) {
 
   return (
     <div className="w-full overflow-auto rounded-md border border-gray-300 px-2 py-4 shadow">
-      <h2 className="mb-1 pl-3 text-2xl font-bold xl:pl-5">{title}</h2>
-      <table className="w-full border-collapse text-right text-sm">
+      <h2 className="mb-1 pl-3 text-2xl font-bold xl:pl-5">{title}</h2>{" "}
+      <table className="w-full table-fixed border-collapse overflow-ellipsis text-right text-sm">
+        <col className="w-[5.5rem] 2xl:w-48" />
+        <col className="w-[5.5rem]" />
+        <col className="w-[5.5rem]" />
+        <col className="w-[5.5rem]" />
+        <col className="hidden w-[5.5rem] sm:table-column sm:pr-0 md:pr-0 lg:pr-0" />
+        <col className="hidden w-[5.5rem] sm:table-column sm:pr-3 md:pr-0 lg:pr-0" />
+        <col className="hidden w-[5.5rem] md:table-column md:pr-0 lg:hidden xl:table-column" />
+        <col className="hidden w-[5.5rem] md:table-column md:pr-3 lg:hidden xl:table-column" />
+        <col className="hidden w-[5.5rem] lg:table-column lg:pr-3 xl:pr-5 2xl:pr-0" />
+        <col className="hidden w-36 text-left 2xl:table-column 2xl:pr-5" />
         <thead>
           <tr className="text-right font-semibold text-zinc-400">
-            <th className="w-10 py-2.5 pl-3 text-left xl:pl-5">Company</th>
-            <th className="w-28">Current</th>
-            <th className="w-28 sm:pr-0">Change</th>
-            <th className="w-28 pr-3 sm:pr-0">% Change</th>
-            <th className="hidden w-28 sm:table-cell sm:pr-0 md:pr-0 lg:pr-0">
+            <th className="py-2.5 pl-3 text-left 2xl:pl-5">Company</th>
+            <th>Current</th>
+            <th className="sm:pr-0">Change</th>
+            <th className="pr-3 sm:pr-0">% Change</th>
+            <th className="hidden sm:table-cell sm:pr-0 md:pr-0 lg:pr-0">
               High
             </th>
-            <th className="hidden w-28 sm:table-cell sm:pr-3 md:pr-0 lg:pr-0">
+            <th className="hidden sm:table-cell sm:pr-3 md:pr-0 lg:pr-0">
               Low
             </th>
-            <th className="hidden w-28 md:table-cell md:pr-0 lg:hidden xl:table-cell">
+            <th className="hidden md:table-cell md:pr-0 lg:hidden xl:table-cell">
               Open
             </th>
-            <th className="hidden w-28 md:table-cell md:pr-3 lg:hidden xl:table-cell">
-              Prev Close
+            <th className="hidden md:table-cell md:pr-3 lg:hidden xl:table-cell">
+              Close
             </th>
-            <th className="hidden w-28 lg:table-cell lg:pr-3 xl:pr-5 2xl:pr-0">
+            <th className="hidden lg:table-cell lg:pr-3 xl:pr-5 2xl:pr-0">
               <span className="hidden 2xl:inline">Market Cap</span>
               <span className="2xl:hidden">Mkt. Cap</span>
             </th>
-            <th className="hidden w-28 pl-7 text-left 2xl:table-cell 2xl:pr-5">
+            <th className="hidden pl-7 text-left 2xl:table-cell 2xl:pr-5">
               Industry
             </th>
           </tr>
         </thead>
         <tbody>
           {isLoading &&
-            Array(6)
+            Array(5)
               .fill()
-              .map((_, i) => (
+              .map((_, index) => (
                 <tr
-                  key={i}
-                  className="rounded-full border-y border-gray-100 text-right last:border-0 hover:bg-gray-50"
+                  key={index}
+                  className="rounded-full border-y border-gray-100 text-right font-mono last:border-0 hover:bg-gray-50"
                 >
-                  <td className="flex w-52 items-center py-2 pl-5 text-left font-sans">
-                    <SkeletonLoading className="mr-2 h-6 w-6 rounded-full" />
+                  <td className="flex items-center py-2 pl-3 text-left font-sans xl:pl-5">
+                    <div className="h-6 basis-6">
+                      <SkeletonLoading className="mr-2 h-6 w-6 rounded-full" />
+                    </div>
+
                     <div className="flex gap-2">
-                      <SkeletonLoading className="h-2 w-16" />
-                      <SkeletonLoading className="h-2 w-20" />
+                      <SkeletonLoading className="h-2 w-8" />
+                      <SkeletonLoading className="hidden h-2 w-32 2xl:block" />
                     </div>
                   </td>
-                  <td className="pl-7">
+                  <td>
                     <SkeletonLoading className="ml-auto h-2 w-16" />
                   </td>
-
-                  <td className="pl-7">
+                  <td>
                     <SkeletonLoading className="ml-auto h-2 w-16" />
                   </td>
-                  <td className="pl-7">
+                  <td className="pr-3 sm:pr-0">
                     <SkeletonLoading className="ml-auto h-2 w-16" />
                   </td>
-                  <td className="pl-7">
+                  <td className="hidden sm:table-cell sm:pr-0 md:pr-0 lg:pr-0">
                     <SkeletonLoading className="ml-auto h-2 w-16" />
                   </td>
-                  <td className="pl-7">
+                  <td className="hidden sm:table-cell sm:pr-3 md:pr-0 lg:pr-0">
                     <SkeletonLoading className="ml-auto h-2 w-16" />
                   </td>
-                  <td className="pl-7">
+                  <td className="hidden md:table-cell md:pr-0 lg:hidden xl:table-cell">
                     <SkeletonLoading className="ml-auto h-2 w-16" />
                   </td>
-                  <td className="pl-7">
+                  <td className="hidden md:table-cell md:pr-3 lg:hidden xl:table-cell">
                     <SkeletonLoading className="ml-auto h-2 w-16" />
                   </td>
-                  <td className="pl-7">
+                  <td className="hidden lg:table-cell lg:pr-3 xl:pr-5 2xl:pr-0">
                     <SkeletonLoading className="ml-auto h-2 w-16" />
                   </td>
-                  <td className="pl-7 pr-5 text-left font-sans">
-                    <SkeletonLoading className="h-2  w-24" />
+                  <td className="hidden pl-7 pr-5 font-sans 2xl:table-cell 2xl:pr-5">
+                    <SkeletonLoading className="h-2 w-24" />
                   </td>
                 </tr>
               ))}
@@ -300,13 +313,13 @@ export default function TricketTable({ title, companies, displayError }) {
                       </div>
                       <div className="flex w-full gap-2">
                         <h3 className="font-bold">{symbol}</h3>
-                        <p className="2xl:w-38 hidden w-full overflow-hidden overflow-ellipsis whitespace-nowrap 2xl:block">
+                        <p className="hidden w-full overflow-hidden overflow-ellipsis whitespace-nowrap 2xl:block 2xl:w-40">
                           {name}
                         </p>
                       </div>
                     </Link>
                   </td>
-                  <td className="">
+                  <td>
                     <span
                       key={"current" + change}
                       className="ml-auto w-fit animate-fade-in"

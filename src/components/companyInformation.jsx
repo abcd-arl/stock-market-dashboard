@@ -24,55 +24,76 @@ export default function CompanyInformation({ symbol }) {
     basicFinancialsIsFetching
   ) {
     return (
-      <div className="space-y-2">
-        <div className="h-fit rounded-md border px-5 py-4">
-          <ul className="w-full">
-            {Array(7)
-              .fill()
-              .map((_, index) => (
-                <li
-                  key={index}
-                  className="flex items-start justify-between border-b py-3 text-xs last:border-b-0 last:pb-1"
-                >
-                  <span className="block w-40 font-semibold text-zinc-500">
-                    <SkeletonLoading className="h-2 w-16" />
-                  </span>
-                  <span className="block text-right font-semibold">
-                    <SkeletonLoading className="h-2 w-16" />
-                  </span>
-                </li>
-              ))}
-          </ul>
-        </div>
-        <div className="rounded-md border p-5">
-          <p className="mb-4 text-xs font-semibold text-zinc-500">ABOUT</p>
-          <div className="mb-4 space-y-3">
-            <SkeletonLoading className="h-2 w-80" />
-            <SkeletonLoading className="h-2 w-80" />
-            <SkeletonLoading className="h-2 w-80" />
-            <SkeletonLoading className="h-2 w-80" />
-            <SkeletonLoading className="h-2 w-80" />
-            <SkeletonLoading className="h-2 w-80" />
-            <SkeletonLoading className="h-2 w-80" />
+      <div className="pt-6 2xl:w-[22rem]">
+        <div className="hidden pb-2 md:block xl:hidden">
+          <div className="mb-4">
+            <SkeletonLoading className="h-2 w-24" />
+          </div>
+          <div className="mb-4 space-y-3.5">
+            <SkeletonLoading className="h-2 w-full" />
+            <SkeletonLoading className="h-2 w-full" />
+            <SkeletonLoading className="h-2 w-full" />
+            <SkeletonLoading className="h-2 w-full" />
+            <SkeletonLoading className="h-2 w-full md:hidden" />
+            <SkeletonLoading className="h-2 w-full md:hidden" />
+            <SkeletonLoading className="h-2 w-full md:hidden" />
             <SkeletonLoading className="h-2 w-52" />
           </div>
-          <ul className="w-full">
-            {Array(5)
-              .fill()
-              .map((_, index) => (
-                <li
-                  key={index}
-                  className="flex items-start justify-between border-b py-3 text-xs last:border-b-0 last:pb-1"
-                >
-                  <span className="block w-40 font-semibold text-zinc-500">
-                    <SkeletonLoading className="h-2 w-16" />
-                  </span>
-                  <span className="block text-right font-semibold">
-                    <SkeletonLoading className="h-2 w-16" />
-                  </span>
-                </li>
-              ))}
-          </ul>
+        </div>
+        <div className="flex flex-col gap-2 md:flex-row xl:flex-col">
+          <div className="basis-1/2 rounded-md border px-5 pb-7 pt-4">
+            <ul className="w-full">
+              {Array(5)
+                .fill()
+                .map((_, index) => (
+                  <li
+                    key={index}
+                    className="flex items-start justify-between border-b py-4 text-xs last:border-b-0 last:pb-1"
+                  >
+                    <span className="block w-40">
+                      <SkeletonLoading className="h-2 w-16" />
+                    </span>
+                    <span className="block w-fit">
+                      <SkeletonLoading className="h-2 w-16" />
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          </div>
+          <div className="basis-1/2 rounded-md border px-5 py-4">
+            <div className="md:hidden xl:block">
+              <p className="mb-4">
+                <SkeletonLoading className="h-2 w-24" />
+              </p>
+              <div className="mb-4 space-y-3.5">
+                <SkeletonLoading className="h-2 w-full" />
+                <SkeletonLoading className="h-2 w-full" />
+                <SkeletonLoading className="h-2 w-full" />
+                <SkeletonLoading className="h-2 w-full" />
+                <SkeletonLoading className="h-2 w-full" />
+                <SkeletonLoading className="h-2 w-full" />
+                <SkeletonLoading className="h-2 w-full" />
+                <SkeletonLoading className="h-2 w-52" />
+              </div>
+            </div>
+            <ul className="w-full">
+              {Array(5)
+                .fill()
+                .map((_, index) => (
+                  <li
+                    key={index}
+                    className="flex items-start justify-between border-b py-4 text-xs last:border-b-0 last:pb-1"
+                  >
+                    <span className="block w-40">
+                      <SkeletonLoading className="h-2 w-16" />
+                    </span>
+                    <span className="block w-fit">
+                      <SkeletonLoading className="h-2 w-16" />
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          </div>
         </div>
       </div>
     );

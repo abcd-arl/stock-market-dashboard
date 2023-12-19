@@ -26,7 +26,7 @@ function App() {
   ];
   return (
     <div className="relative m-auto flex max-w-[1700px] flex-col gap-1.5 p-2 text-zinc-700 lg:flex-row-reverse">
-      <aside className="sticky top-2 z-10 flex flex-col-reverse justify-start gap-1.5 bg-white lg:h-[calc(100vh-1.25rem)] lg:w-[30%] lg:flex-col xl:basis-96">
+      <aside className="sticky top-2 z-10 flex flex-col-reverse justify-start gap-1.5 bg-white lg:max-h-[calc(100vh-1.25rem)] lg:w-[30%] lg:flex-col xl:basis-96">
         <SearchBox />
         <DateTimeDisplay />
         <WatchList
