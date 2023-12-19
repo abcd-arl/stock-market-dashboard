@@ -33,27 +33,33 @@ export default function Profile({ symbol }) {
   if (Object.keys(data).length === 0) return <Error type={"404"} />;
 
   return (
-    <div className="relative w-full rounded-md border-l border-t border-gray-300 py-2 pl-3 pr-1">
-      <ul className="not mb-4 mt-2 flex gap-3 pl-3 text-sm">
-        <li className="after:inline-block after:pl-3 after:content-['>']">
-          <Link to="/">Home</Link>
-        </li>
-        <li>{symbol}</li>
-      </ul>
-      <div className="flex gap-3">
-        <div className="w-[70%] space-y-2 px-3">
-          <div className="flex items-end gap-3">
-            <h1 className="text-5xl font-semibold">{symbol}</h1>
-            <h2 className="text-3xl">{data.name}</h2>
+    <div className="relative w-full rounded-md border-l border-t border-gray-300 py-2 pl-3 md:pr-1">
+      <div className="flex flex-col gap-2 xl:flex-row">
+        <div className="w-[100%] px-3 xl:w-[65%] 2xl:basis-full">
+          <div className="mb-3 flex items-end gap-2 md:mb-0">
+            <Link
+              to="/"
+              className="absolute -left-1.5 top-3 flex items-center justify-center rounded-full border border-zinc-300 bg-white px-2 py-0.5 text-lg shadow lg:-left-2 lg:px-3 lg:py-1.5"
+            >
+              &#8592;
+            </Link>
+            <h1 className="ml-8 text-4xl font-semibold md:text-5xl lg:ml-8">
+              {symbol}
+            </h1>
+            <h2 className="text-lg md:text-3xl">{data.name}</h2>
           </div>
           <LineChart symbol={symbol} />
-          <div className="space-y-4">
+          <RelatedTickers symbol={symbol} />
+          <div className="hidden xl:block">
             <CompanyNews symbol={symbol} />
-            <RelatedTickers symbol={symbol} />
-            {/* <TricketTable companies={peers} /> */}
+          </div>
+
+          <div className="xl:hidden">
+            <CompanyInformation symbol={symbol} />
+            <CompanyNews symbol={symbol} />
           </div>
         </div>
-        <div className="w-[30%]">
+        <div className="hidden xl:block xl:w-[35%] 2xl:w-fit">
           <CompanyInformation symbol={symbol} />
         </div>
       </div>

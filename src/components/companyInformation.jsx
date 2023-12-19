@@ -79,19 +79,19 @@ export default function CompanyInformation({ symbol }) {
   }
 
   const infoPartOne = {
-    CURRENCY: profileAndQuote.profile?.currency,
+    // CURRENCY: profileAndQuote.profile?.currency,
     "PREV CLOSE": profileAndQuote.quote?.c,
     "52-WEEK RANGE": `${basicFinancials.metric["52WeekLow"]} - ${basicFinancials.metric["52WeekHigh"]}`,
     "MARKET CAP": formatMarketCap(
       profileAndQuote.profile?.marketCapitalization,
     ),
     "P/E NORMALIZED ANNUAL": basicFinancials.metric.peNormalizedAnnual,
-    "10-DAY AVG. VOLUME": basicFinancials.metric["10DayAverageTradingVolume"],
-    "PRIMARY EXCHANGE": profileAndQuote.profile?.exchange,
+    // "10-DAY AVG. VOLUME": basicFinancials.metric["10DayAverageTradingVolume"],
+    EXCHANGE: profileAndQuote.profile?.exchange,
   };
 
   const infoPartTwo = {
-    COUNTRY: profileAndQuote.profile?.country,
+    "COUNTRY CODE": profileAndQuote.profile?.country,
     "IPO DATE": new Date(profileAndQuote.profile?.ipo).toLocaleDateString(
       undefined,
       {
@@ -106,25 +106,8 @@ export default function CompanyInformation({ symbol }) {
   };
 
   return (
-    <div className="space-y-2">
-      <div className="h-fit rounded-md border px-5 py-4">
-        <ul className="w-full">
-          {Object.keys(infoPartOne).map((key) => (
-            <li
-              key={key}
-              className="flex items-start justify-between border-b py-3 text-xs last:border-b-0 last:pb-1"
-            >
-              <span className="block w-40 font-semibold text-zinc-500">
-                {key}
-              </span>
-              <span className="block text-right font-semibold">
-                {infoPartOne[key]}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="rounded-md border p-5">
+    <div className="pt-6 2xl:w-[22rem]">
+      <div className="hidden pb-2 md:block xl:hidden">
         <p className="mb-4 text-xs font-semibold uppercase text-zinc-500">
           About {profileAndQuote.profile.name}
         </p>
@@ -136,21 +119,55 @@ export default function CompanyInformation({ symbol }) {
           neque lectus, a mollis ipsum scelerisque non. Curabitur facilisis
           lacus et eleifend semper.
         </p>
-        <ul className="w-full">
-          {Object.keys(infoPartTwo).map((key) => (
-            <li
-              key={key}
-              className="flex items-start justify-between border-b py-3 text-xs last:border-b-0 last:pb-1"
-            >
-              <span className="block w-40 font-semibold text-zinc-500">
-                {key}
-              </span>
-              <span className="block text-right font-semibold">
-                {infoPartTwo[key]}
-              </span>
-            </li>
-          ))}
-        </ul>
+      </div>
+      <div className="flex flex-col gap-2 md:flex-row xl:flex-col">
+        <div className="basis-1/2 rounded-md border px-5 pb-7 pt-4">
+          <ul className="w-full">
+            {Object.keys(infoPartOne).map((key) => (
+              <li
+                key={key}
+                className="flex items-start justify-between border-b py-3 text-xs last:border-b-0 last:pb-1"
+              >
+                <span className="block w-40 font-semibold text-zinc-500">
+                  {key}
+                </span>
+                <span className="block w-fit text-right font-semibold">
+                  {infoPartOne[key]}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="basis-1/2 rounded-md border px-5 py-4">
+          <div className="md:hidden xl:block">
+            <p className="mb-4 text-xs font-semibold uppercase text-zinc-500">
+              About {profileAndQuote.profile.name}
+            </p>
+            <p className="mb-4 hyphens-auto text-justify text-sm leading-6">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam
+              ullamcorper purus massa, eu vulputate lectus feugiat non. Nunc id
+              felis nunc. Curabitur magna nulla, aliquam quis vehicula eu,
+              vulputate a est. Donec varius at ipsum sit amet malesuada. Aenean
+              pellentesque neque lectus, a mollis ipsum scelerisque non.
+              Curabitur facilisis lacus et eleifend semper.
+            </p>
+          </div>
+          <ul className="w-full">
+            {Object.keys(infoPartTwo).map((key) => (
+              <li
+                key={key}
+                className="flex items-start justify-between border-b py-3 text-xs last:border-b-0 last:pb-1"
+              >
+                <span className="block w-fit font-semibold text-zinc-500">
+                  {key}
+                </span>
+                <span className="block w-fit text-right font-semibold">
+                  {infoPartTwo[key]}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

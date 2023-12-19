@@ -1,4 +1,5 @@
 import { useGetMarketNewsQuery } from "../redux/finnhub";
+import { formatDatetime } from "../utils/format";
 import SkeletonLoading from "./skeletonLoading";
 
 export default function MarketNews({ displayError }) {
@@ -6,26 +7,10 @@ export default function MarketNews({ displayError }) {
 
   if (isError && error.status == 429) return displayError("429");
 
-  const formatDatetime = (datetime) => {
-    const now = new Date();
-    const date = new Date(datetime * 1000);
-    const diff = now - date;
-    const diffMinutes = Math.floor(diff / 60000);
-    const diffHours = Math.floor(diff / 3600000);
-    const diffDays = Math.floor(diff / 86400000);
-    const diffMonths = Math.floor(diff / 2592000000);
-
-    if (diffMinutes < 60) return `${diffMinutes} minutes ago`;
-    if (diffHours < 24) return `${diffHours} hours ago`;
-    if (diffDays < 30) return `${diffDays} days ago`;
-    if (diffMonths < 12) return `${diffMonths} months ago`;
-    return date.toLocaleString();
-  };
-
   return (
     <div className="rounded-md border border-gray-300 px-8 py-4 text-[0.8rem] shadow">
       <h2 className="mb-6 text-2xl font-bold">Market News</h2>
-      <div className="flex flex-col gap-5 pr-16">
+      <div className="grid grid-cols-1 gap-x-10 gap-y-7 2xl:grid-cols-2">
         {isLoading &&
           Array(3)
             .fill(0)
@@ -55,29 +40,31 @@ export default function MarketNews({ displayError }) {
               </div>
             ))}
         {!isLoading &&
-          data.slice(0, 8).map((article) => (
+          data.map((article) => (
             <a
               key={article.id}
               href={article.url}
               target="_blank"
-              className="w-full border-b border-gray-200 pb-5 last:border-b-0 hover:text-zinc-500"
+              className="w-full border-b border-gray-200 pb-8 hover:text-zinc-500"
             >
-              <div className="flex gap-8">
-                <p className="mb-2 basis-[15%] text-gray-500">
-                  {formatDatetime(article.datetime)}
-                </p>
-                <div className="basis-[70%] space-y-3">
+              <div className="flex flex-col gap-5 sm:flex-row">
+                <div className="basis-[70%] space-y-2">
                   <h3 className="mb-1 text-base font-bold">
                     {article.headline.startsWith(":")
                       ? article.headline.slice(1).trim()
                       : article.headline}
                   </h3>
-                  <p className="mb-2 basis-[15%] text-gray-500">
-                    {formatDatetime(article.datetime)}
+                  <p className="mb-2 text-gray-500">
+                    {formatDatetime(article.datetime)} | {article.source}
                   </p>
                   <p className="text-sm">{article.summary}</p>
                 </div>
-                <img src={article.image} className="h-36 w-64 object-cover" />
+                <div className="h-24 shrink-0 basis-48">
+                  <img
+                    src={article.image}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
               </div>
             </a>
           ))}

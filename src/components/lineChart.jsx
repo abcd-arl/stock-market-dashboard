@@ -138,7 +138,7 @@ export default function LineChart({ symbol }) {
           displayFormats: {
             day: "MMM dd",
             week: "MMM dd",
-            month: "MMMM",
+            month: "MMM",
             year: "yyyy",
           },
         },
@@ -152,6 +152,8 @@ export default function LineChart({ symbol }) {
               : numOfMonths === "all"
                 ? Object.keys(prices).length / 365
                 : 10,
+          maxRotation: 0,
+          minRotation: 0,
         },
       },
       y: {

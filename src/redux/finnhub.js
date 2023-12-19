@@ -43,6 +43,8 @@ export const finnhubApi = createApi({
           if (profile?.error?.status === 429 || quote?.error?.status === 429)
             return { error: { status: 429 } };
 
+          if (Object.keys(profile.data).length === 0 && quote.c === 0) continue;
+
           data[symbol] = {
             profile: profile.data,
             quote: quote.data,
@@ -69,30 +71,42 @@ export const finnhubApi = createApi({
       },
     }),
     getPeersProfilesAndQuotes: builder.query({
-      queryFn: async (arg, queryApi) => {
-        const peers = await queryApi.dispatch(
-          finnhubApi.endpoints.getPeers.initiate({
-            symbol: arg.symbol,
-            grouping: arg.grouping,
-          }),
-        );
+      queryFn: async (args, queryApi) => {
+        const { symbol, peers, limit } = args;
 
-        const data = {};
-        for (const symbol of peers.data) {
+        const data = {
+          peers: {},
+          unavailablePeers: [],
+        };
+        for (const peer of peers) {
+          if (peer === symbol) {
+            data.unavailablePeers.push(peer);
+            continue;
+          }
+
           const profile = await queryApi.dispatch(
-            finnhubApi.endpoints.getProfile.initiate(symbol),
+            finnhubApi.endpoints.getProfile.initiate(peer),
           );
           const quote = await queryApi.dispatch(
-            finnhubApi.endpoints.getQuote.initiate(symbol),
+            finnhubApi.endpoints.getQuote.initiate(peer),
           );
 
-          if (profile.error || quote.error) continue;
+          if (profile?.error?.status === 429 || quote?.error?.status === 429)
+            return { error: { status: 429 } };
 
-          data[symbol] = {
+          if (Object.keys(profile.data).length === 0 || quote.data.c === 0) {
+            data.unavailablePeers.push(peer);
+            continue;
+          }
+
+          data.peers[peer] = {
             profile: profile.data,
             quote: quote.data,
           };
+
+          if (Object.keys(data.peers).length === limit) break;
         }
+
         return { data };
       },
     }),
@@ -100,13 +114,13 @@ export const finnhubApi = createApi({
 });
 
 export const {
+  useGetPeersQuery,
   useGetProfilesAndQuotesQuery,
   useLazyGetProfilesAndQuotesQuery,
   useGetProfileAndQuoteQuery,
   useGetMarketNewsQuery,
   useGetCompanyNewsQuery,
   useGetBasicFinancialsQuery,
-  useGetPeersProfilesAndQuotesQuery,
+  useLazyGetPeersProfilesAndQuotesQuery,
   useGetProfileQuery,
-  useGetPeersQuery,
 } = finnhubApi;

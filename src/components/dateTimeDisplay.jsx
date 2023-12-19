@@ -23,7 +23,7 @@ export default function DateTimeDisplay() {
   });
 
   return (
-    <div className="rounded-lg border bg-gradient-to-r from-willow-gray to-rust-gray text-white">
+    <div className="hidden rounded-lg border bg-gradient-to-r from-willow-gray to-rust-gray text-white lg:block">
       <div className="h-full w-full rounded-lg border border-white/90 bg-white/10 px-2 py-4 backdrop-blur-md">
         <div className="m-auto w-fit font-mono text-4xl">{time}</div>
         <div className="m-auto w-fit text-xl font-semibold">{date}</div>

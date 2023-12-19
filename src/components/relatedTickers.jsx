@@ -1,106 +1,200 @@
 import { Link } from "wouter";
 import { formatMarketCap } from "../utils/format";
-import { useGetPeersProfilesAndQuotesQuery } from "../redux/finnhub";
+import {
+  useGetPeersQuery,
+  useLazyGetPeersProfilesAndQuotesQuery,
+} from "../redux/finnhub";
+import { useEffect, useState } from "react";
 
 export default function RelatedTickers({ symbol }) {
-  const { data, error, isLoading, isFetching } =
-    useGetPeersProfilesAndQuotesQuery({
-      symbol,
-      grouping: "industry",
-    });
-  if (isLoading || isFetching) return <div>Loading...</div>;
-  if (error) return <div>Oh no, there was an error</div>;
+  const [relatedTickers, setRelatedTickers] = useState({});
+  const [peersToGet, setPeersToGet] = useState([]);
+  const {
+    data: peers,
+    isLoading: peersIsLoading,
+    isSuccess: peersIsSuccess,
+    error: peersError,
+  } = useGetPeersQuery({
+    symbol,
+    grouping: "industry",
+  });
+  const [
+    getPeersProfilesAndQuotes,
+    {
+      data: peersProfilesAndQuotes,
+      isLoading: peersProfilesAndQuotesIsLoading,
+      isFetching: peersProfilesAndQuotesIsFetching,
+      error: peersProfilesAndQuotesError,
+    },
+  ] = useLazyGetPeersProfilesAndQuotesQuery({});
 
-  console.log(data);
+  useEffect(() => {
+    if (peersIsSuccess) {
+      setPeersToGet(peers);
+      getPeersProfilesAndQuotes({
+        symbol,
+        peers,
+        limit: 4,
+      });
+    }
+  }, [peersIsSuccess]);
+
+  useEffect(() => {
+    if (peersProfilesAndQuotes) {
+      setRelatedTickers((relatedTickers) => ({
+        ...relatedTickers,
+        ...peersProfilesAndQuotes.peers,
+      }));
+      setPeersToGet((peersToGet) =>
+        peersToGet.filter(
+          (peer) =>
+            !Object.keys(peersProfilesAndQuotes.peers).includes(peer) &&
+            !peersProfilesAndQuotes.unavailablePeers.includes(peer),
+        ),
+      );
+    }
+  }, [peersProfilesAndQuotes]);
+
+  console.log("peers", peersToGet);
+  console.log("relatedTickers", relatedTickers);
+
+  function loadMorePeers(limit = 2) {
+    getPeersProfilesAndQuotes({
+      symbol,
+      peers: peersToGet,
+      limit,
+    });
+  }
+
+  if (peersIsLoading || peersProfilesAndQuotesIsLoading)
+    return <div>Loading...</div>;
+  if (peersError) return <div>Oh no, there was an error</div>;
+  if (peersToGet.length === 0 && Object.keys(relatedTickers).length === 0)
+    return;
 
   return (
     <div className="mt-10">
-      <h3 className="mb-2 text-xs font-bold uppercase text-zinc-500">
-        Companies on the Same Industry
-      </h3>
-      <table className="w-full border-collapse text-sm">
-        <thead>
-          <tr className="p-10 text-right font-semibold text-zinc-400">
-            <th className="py-2.5 pl-3 text-left">Company</th>
-            <th>Current</th>
-            <th>Change</th>
-            <th>Change %</th>
-            <th>High</th>
-            <th>Low</th>
-            <th>Open</th>
-            <th>Close</th>
-            <th className="pr-3">Market Cap</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.keys(data).map((symbol) => {
-            const {
-              logo,
-              name,
-              marketCapitalization: marketCap,
-            } = data[symbol].profile;
-            const {
-              c: current,
-              d: change,
-              dp: percentChange,
-              h: high,
-              l: low,
-              o: open,
-              pc: close,
-            } = data[symbol].quote;
+      <div className="flex items-start justify-between">
+        <h3 className="mb-5 text-xs font-bold uppercase text-zinc-500">
+          Companies on the Same Industry
+        </h3>
+        {peersToGet.length > 0 &&
+          (peersProfilesAndQuotesIsFetching ? (
+            <div className="space-x-3 text-right text-xs">Loading...</div>
+          ) : (
+            <div className="space-x-3 text-right text-xs text-slate-500">
+              <button onClick={() => loadMorePeers()}>See more</button>
+              <button onClick={() => loadMorePeers(peersToGet.length)}>
+                See all
+              </button>
+            </div>
+          ))}
+      </div>
+      <div
+        className={`grid grid-cols-1 gap-x-3 xl:grid-cols-1 2xl:grid-cols-2 ${
+          Object.keys(relatedTickers).length > 1
+            ? "md:grid-cols-2 2xl:grid-cols-2"
+            : "md:grid-cols-1 2xl:grid-cols-1"
+        }`}
+      >
+        <div className="grid grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] gap-2 border-b pb-1.5 text-right text-xs md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] xl:grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr]">
+          <div className="w-10 pl-2 text-left">Company</div>
+          <div>Current</div>
+          <div>Change</div>
+          <div className="md:pr-2 xl:pr-0">
+            % <span className="md:hidden xl:inline">Change</span>
+          </div>
+          <div className="pr-2 md:hidden xl:block">
+            <span className="hidden xl:inline">Market Cap</span>
+            <span className="xl:hidden">Mkt. Cap</span>
+          </div>
+        </div>
+        {Object.keys(relatedTickers).length > 1 && (
+          <div className="hidden grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] gap-2 border-b pb-1.5 text-right text-xs md:grid md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] xl:hidden xl:grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] 2xl:grid">
+            <div className="w-10 pl-2 text-left ">Company</div>
+            <div>Current</div>
+            <div>Change</div>
+            <div className="md:pr-2 xl:pr-0">
+              % <span className="md:hidden xl:inline">Change</span>
+            </div>
+            <div className="pr-2 md:hidden xl:block">
+              <span className="hidden xl:inline">Market Cap</span>
+              <span className="xl:hidden">Mkt. Cap</span>
+            </div>
+          </div>
+        )}
+        {Object.keys(relatedTickers).map((symbol) => {
+          const {
+            logo,
+            name,
+            marketCapitalization: marketCap,
+          } = relatedTickers[symbol].profile;
+          const {
+            c: current,
+            d: change,
+            dp: percentChange,
+            h: high,
+            l: low,
+            o: open,
+            pc: close,
+          } = relatedTickers[symbol].quote;
 
-            return (
-              <tr
-                key={symbol}
-                className="rounded-full border-y border-gray-100 text-right font-mono last:border-0 hover:bg-gray-50"
+          return (
+            <div
+              key={symbol}
+              className="grid grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] gap-2 border-b py-1.5 font-mono text-sm hover:bg-gray-100 md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] xl:grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr]"
+            >
+              <div className="pl-2">
+                <Link
+                  to={`/profile/${symbol}`}
+                  key={symbol}
+                  className="flex items-center gap-2 font-sans"
+                >
+                  <div className="h-6 w-6 rounded-full bg-gray-300">
+                    <img
+                      src={logo}
+                      alt={name}
+                      className="h-full w-full rounded-full"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="font-bold">{symbol}</span>
+                    {/* <span>{name}</span> */}
+                  </div>
+                </Link>
+              </div>
+              <div className={"flex items-center justify-end font-mono"}>
+                {current.toFixed(2)}
+              </div>
+              <div
+                className={`flex items-center justify-end ${
+                  change > 0
+                    ? "text-green-600"
+                    : change < 0
+                      ? "text-red-600"
+                      : ""
+                }`}
               >
-                <td className="w-36 py-2 pl-3 text-left font-sans">
-                  <Link
-                    to={`/profile/${symbol}`}
-                    className="flex w-fit items-center"
-                  >
-                    <div className="mr-2 h-6 shrink-0 basis-6 rounded-full bg-gray-200">
-                      <img
-                        src={logo}
-                        alt={name}
-                        className="h-6 w-6 rounded-full"
-                      />
-                    </div>
-                    <div className="flex w-fit gap-2">
-                      <h3 className="font-bold">{symbol}</h3>
-                      <p className="w-36 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                        {name}
-                      </p>
-                    </div>
-                  </Link>
-                </td>
-                <td>{current?.toFixed(3)}</td>
-                <td
-                  className={`sm:pr-0 ${
-                    change < 0 ? "text-red-600" : "text-green-600"
-                  }`}
-                >
-                  {change > 0 ? "+" : ""}
-                  {change.toFixed(3)}
-                </td>
-                <td
-                  className={`pr-3 sm:pr-0 ${
-                    percentChange < 0 ? "text-red-600" : "text-green-600"
-                  }`}
-                >
-                  {change > 0 ? "+" : ""}
-                  {percentChange.toFixed(3)}
-                </td>
-                <td>{high.toFixed(3)}</td>
-                <td>{low.toFixed(3)}</td>
-                <td>{open.toFixed(3)}</td>
-                <td>{close.toFixed(3)}</td>
-                <td className="pr-3">{formatMarketCap(marketCap)}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                {change.toFixed(2)}
+              </div>
+              <div
+                className={`flex items-center justify-end md:pr-2 xl:pr-0 ${
+                  change > 0
+                    ? "text-green-600"
+                    : change < 0
+                      ? "text-red-600"
+                      : ""
+                }`}
+              >
+                {percentChange.toFixed(2)}%
+              </div>
+              <div className="flex items-center justify-end pr-2 md:hidden xl:flex">
+                {formatMarketCap(marketCap)}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
