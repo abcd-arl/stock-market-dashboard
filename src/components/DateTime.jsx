@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function DateTimeDisplay() {
+export default function DateTime() {
   const [datetime, setDatetime] = useState(new Date());
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { useState } from "react";
 
-export default function SearchBox() {
+export default function SearchSymbol() {
   const [, setLocation] = useLocation();
   const [inputValue, setInputValue] = useState("");
 

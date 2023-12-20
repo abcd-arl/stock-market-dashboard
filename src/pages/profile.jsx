@@ -2,9 +2,8 @@ import { Link } from "wouter";
 import Spinner from "../assets/icons8-spinner.gif";
 import CompanyInformation from "../components/companyInformation";
 import LineChart from "../components/lineChart";
-import CompanyNews from "../components/companyNews";
+import CompanyNews from "../components/CompanyNews";
 import RelatedTickers from "../components/relatedTickers";
-import TricketTable from "../components/tricketTable";
 import Error from "./error";
 
 import { useGetProfileQuery, useGetPeersQuery } from "../redux/finnhub";

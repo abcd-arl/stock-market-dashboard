@@ -62,9 +62,9 @@ export default function CompanyInformation({ symbol }) {
           </div>
           <div className="basis-1/2 rounded-md border px-5 py-4">
             <div className="md:hidden xl:block">
-              <p className="mb-4">
+              <div className="mb-4">
                 <SkeletonLoading className="h-2 w-24" />
-              </p>
+              </div>
               <div className="mb-4 space-y-3.5">
                 <SkeletonLoading className="h-2 w-full" />
                 <SkeletonLoading className="h-2 w-full" />
@@ -129,7 +129,7 @@ export default function CompanyInformation({ symbol }) {
   return (
     <div className="pt-6 2xl:w-[22rem]">
       <div className="hidden pb-2 md:block xl:hidden">
-        <p className="mb-4 text-xs font-semibold uppercase text-zinc-500">
+        <p className="mb-4 pt-4 text-xs font-semibold uppercase text-zinc-500">
           About {profileAndQuote.profile.name}
         </p>
         <p className="mb-4 hyphens-auto text-justify text-sm leading-6">
@@ -161,7 +161,7 @@ export default function CompanyInformation({ symbol }) {
         </div>
         <div className="basis-1/2 rounded-md border px-5 py-4">
           <div className="md:hidden xl:block">
-            <p className="mb-4 text-xs font-semibold uppercase text-zinc-500">
+            <p className="mb-4 pt-4 text-xs font-semibold uppercase text-zinc-500">
               About {profileAndQuote.profile.name}
             </p>
             <p className="mb-4 hyphens-auto text-justify text-sm leading-6">

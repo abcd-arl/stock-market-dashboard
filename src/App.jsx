@@ -1,17 +1,18 @@
 import { Switch, Route } from "wouter";
-import Home from "./pages/home";
+import TickersTable from "./components/TickersTable";
+import MarketNews from "./components/MarketNews";
 import Profile from "./pages/profile";
 import Error from "./pages/error";
-import DateTimeDisplay from "./components/dateTimeDisplay";
-import SearchBox from "./components/searchBox";
+import DateTime from "./components/DateTime";
+import SearchSymbol from "./components/SearchSymbol";
 import WatchList from "./components/watchList";
 
 export const SOCKET_URL =
   "wss://ws.finnhub.io?token=clmf669r01qjiveu7n70clmf669r01qjiveu7n7g";
 
 function App() {
-  const topTrickers = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA"];
-  const trendingTrickers = ["NIO", "GTLB", "JNJ", "NVDA", "AMD", "DIS"];
+  const topTrickers = ["AAPL", "MSFT", "GOOGL", "AMZN", "META"];
+  const trendingTrickers = ["NIO", "GTLB", "JNJ", "NVDA", "AMD"];
   const initialWatchListTrickers = [
     "MARA",
     "T",
@@ -26,9 +27,9 @@ function App() {
   ];
   return (
     <div className="relative m-auto flex max-w-[1700px] flex-col gap-1.5 p-2 text-zinc-700 lg:flex-row-reverse">
-      <aside className="sticky top-2 z-10 flex flex-col-reverse justify-start gap-1.5 bg-white lg:max-h-[calc(100vh-1.25rem)] lg:w-[30%] lg:flex-col xl:basis-96">
-        <SearchBox />
-        <DateTimeDisplay />
+      <aside className="sticky top-2 z-10 flex flex-col-reverse justify-start gap-1.5 bg-white lg:max-h-[calc(100vh-1rem)] lg:w-[30%] lg:flex-col xl:basis-96">
+        <SearchSymbol />
+        <DateTime />
         <WatchList
           symbols={initialWatchListTrickers}
           topAndTrendingTickers={new Set(topTrickers.concat(trendingTrickers))}
@@ -37,7 +38,12 @@ function App() {
       <main className="space-y-1.5 lg:w-[70%] xl:w-[calc(100%-24rem)]">
         <Switch>
           <Route path="/">
-            <Home />
+            <TickersTable title={"Top Tickers"} symbols={topTrickers} />
+            <TickersTable
+              title={"Trending Tickers"}
+              symbols={trendingTrickers}
+            />
+            <MarketNews />
           </Route>
           <Route path="/profile/:symbol">
             {(params) => <Profile symbol={params.symbol} />}

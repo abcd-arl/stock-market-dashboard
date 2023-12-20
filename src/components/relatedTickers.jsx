@@ -1,10 +1,10 @@
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { formatMarketCap } from "../utils/format";
 import {
   useGetPeersQuery,
-  useLazyGetPeersProfilesAndQuotesQuery,
+  useLazyGetProfilesAndQuotesWithLimitQuery,
 } from "../redux/finnhub";
-import { useEffect, useState } from "react";
+import { formatMarketCap } from "../utils/format";
 import SkeletonLoading from "./skeletonLoading";
 
 export default function RelatedTickers({ symbol }) {
@@ -12,60 +12,81 @@ export default function RelatedTickers({ symbol }) {
   const [peersToGet, setPeersToGet] = useState([]);
   const {
     data: peers,
-    isLoading: peersIsLoading,
-    isSuccess: peersIsSuccess,
-    error: peersError,
+    isFetching: isFetchingPeers,
+    isSuccess: isSuccessPeers,
+    isError: isErrorPeers,
+    error: errorPeers,
+    refetch: refetchPeers,
   } = useGetPeersQuery({
     symbol,
     grouping: "industry",
   });
   const [
-    getPeersProfilesAndQuotes,
+    getTickersProfileAndQuote,
     {
       data: peersProfilesAndQuotes,
       isLoading: peersProfilesAndQuotesIsLoading,
       isFetching: peersProfilesAndQuotesIsFetching,
+      isError: peersProfilesAndQuotesIsError,
       error: peersProfilesAndQuotesError,
     },
-  ] = useLazyGetPeersProfilesAndQuotesQuery({});
+  ] = useLazyGetProfilesAndQuotesWithLimitQuery({});
 
   useEffect(() => {
-    if (peersIsSuccess) {
-      setPeersToGet(peers);
-      getPeersProfilesAndQuotes({
-        symbol,
-        peers,
+    if (isSuccessPeers) {
+      const peersWithoutSelf = peers.filter((peer) => peer !== symbol);
+      setPeersToGet(peersWithoutSelf);
+      getTickersProfileAndQuote({
+        peers: peersWithoutSelf,
         limit: 4,
       });
     }
-  }, [peersIsSuccess]);
+  }, [isSuccessPeers]);
 
   useEffect(() => {
     if (peersProfilesAndQuotes) {
       setRelatedTickers((relatedTickers) => ({
         ...relatedTickers,
-        ...peersProfilesAndQuotes.peers,
+        ...peersProfilesAndQuotes.available,
       }));
       setPeersToGet((peersToGet) =>
         peersToGet.filter(
           (peer) =>
-            !Object.keys(peersProfilesAndQuotes.peers).includes(peer) &&
-            !peersProfilesAndQuotes.unavailablePeers.includes(peer),
+            !Object.keys(peersProfilesAndQuotes.available).includes(peer) &&
+            !Object.keys(peersProfilesAndQuotes.unavailable).includes(peer),
         ),
       );
     }
   }, [peersProfilesAndQuotes]);
 
-  function loadMorePeers(limit = 2) {
-    getPeersProfilesAndQuotes({
-      symbol,
+  const loadMorePeers = (limit = 2) => {
+    getTickersProfileAndQuote({
       peers: peersToGet,
       limit,
     });
-  }
+  };
 
+  const SkeletonHeader = () => (
+    <>
+      <div className="pl-2 text-left">
+        <SkeletonLoading className="h-2 w-10" />
+      </div>
+      <div className="flex  items-center justify-end">
+        <SkeletonLoading className="h-2 w-10" />
+      </div>
+      <div className={"flex items-center justify-end"}>
+        <SkeletonLoading className="h-2 w-10" />
+      </div>
+      <div className="flex items-center justify-end md:pr-2 xl:pr-0">
+        <SkeletonLoading className="h-2 w-10" />
+      </div>
+      <div className="flex items-center justify-end pr-2 md:hidden xl:flex">
+        <SkeletonLoading className="h-2 w-10" />
+      </div>
+    </>
+  );
   const SkeletonItem = () => (
-    <div className="grid grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] gap-2 border-b py-1.5 font-mono text-sm hover:bg-gray-100 md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] xl:grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr]">
+    <div className="grid grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] gap-2 border-b py-1.5 font-mono text-sm md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] xl:grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr]">
       <div className="pl-2">
         <div className="flex items-center gap-2">
           <div className="h-6 w-6">
@@ -90,8 +111,22 @@ export default function RelatedTickers({ symbol }) {
       </div>
     </div>
   );
+  const Header = () => (
+    <>
+      <div className="w-10 pl-2 text-left">Company</div>
+      <div>Current</div>
+      <div>Change</div>
+      <div className="md:pr-2 xl:pr-0">
+        % <span className="md:hidden xl:inline">Change</span>
+      </div>
+      <div className="pr-2 md:hidden xl:block">
+        <span className="hidden xl:inline">Market Cap</span>
+        <span className="xl:hidden">Mkt. Cap</span>
+      </div>
+    </>
+  );
 
-  if (peersIsLoading || peersProfilesAndQuotesIsLoading)
+  if (isFetchingPeers || peersProfilesAndQuotesIsLoading)
     return (
       <div className="mt-10">
         <div className="flex items-start justify-between">
@@ -101,38 +136,10 @@ export default function RelatedTickers({ symbol }) {
         </div>
         <div className="grid grid-cols-1 gap-x-3 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
           <div className="grid grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] gap-2 border-b pb-1.5 text-right text-xs md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] xl:grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr]">
-            <div className="pl-2 text-left">
-              <SkeletonLoading className="h-2 w-10" />
-            </div>
-            <div className="flex  items-center justify-end">
-              <SkeletonLoading className="h-2 w-10" />
-            </div>
-            <div className={"flex items-center justify-end"}>
-              <SkeletonLoading className="h-2 w-10" />
-            </div>
-            <div className="flex items-center justify-end md:pr-2 xl:pr-0">
-              <SkeletonLoading className="h-2 w-10" />
-            </div>
-            <div className="flex items-center justify-end pr-2 md:hidden xl:flex">
-              <SkeletonLoading className="h-2 w-10" />
-            </div>
+            <SkeletonHeader />
           </div>
           <div className="hidden grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] gap-2 border-b pb-1.5 text-right text-xs md:grid md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] xl:hidden xl:grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] 2xl:grid">
-            <div className="pl-2 text-left">
-              <SkeletonLoading className="h-2 w-10" />
-            </div>
-            <div className="flex  items-center justify-end">
-              <SkeletonLoading className="h-2 w-10" />
-            </div>
-            <div className={"flex items-center justify-end"}>
-              <SkeletonLoading className="h-2 w-10" />
-            </div>
-            <div className="flex items-center justify-end md:pr-2 xl:pr-0">
-              <SkeletonLoading className="h-2 w-10" />
-            </div>
-            <div className="flex items-center justify-end pr-2 md:hidden xl:flex">
-              <SkeletonLoading className="h-2 w-10" />
-            </div>
+            <SkeletonHeader />
           </div>
           {Array(4)
             .fill()
@@ -143,27 +150,69 @@ export default function RelatedTickers({ symbol }) {
       </div>
     );
 
-  if (peersError) return <div>Oh no, there was an error</div>;
-  if (peersToGet.length === 0 && Object.keys(relatedTickers).length === 0)
+  if (isErrorPeers && errorPeers.status == 429) {
+    return (
+      <div className="mt-10">
+        <h3 className="mb-5 text-xs font-bold uppercase text-zinc-500">
+          Companies on the Same Industry
+        </h3>
+        <div className="text-sm">
+          <p>
+            You have reached the maximum API call limit. Please try again after
+            a minute. Click{" "}
+            <span className="text-blue-500" onClick={refetchPeers}>
+              here
+            </span>{" "}
+            to refetch.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (peersToGet.length === 0 && Object.keys(relatedTickers).length === 0) {
     return;
+  }
+
+  let options;
+  if (
+    peersProfilesAndQuotesIsError &&
+    peersProfilesAndQuotesError.status == 429
+  ) {
+    options = (
+      <p className="text-right text-xs">
+        Please try again after a minute. Click{" "}
+        <span
+          className="cursor-pointer text-blue-500"
+          onClick={() => loadMorePeers()}
+        >
+          here
+        </span>{" "}
+        to refetch.
+      </p>
+    );
+  } else if (Object.keys(peersToGet).length > 0) {
+    options = peersProfilesAndQuotesIsFetching ? (
+      <div className="space-x-3 text-right text-xs">Loading...</div>
+    ) : (
+      <div className="space-x-3 text-right text-xs text-slate-500">
+        <button onClick={() => loadMorePeers()}>See more</button>
+        <button onClick={() => loadMorePeers(peersToGet.length)}>
+          See all
+        </button>
+      </div>
+    );
+  }
+
+  console.log(Object.keys(peersToGet).length);
 
   return (
     <div className="mt-10">
       <div className="flex items-start justify-between">
-        <h3 className="mb-5 text-xs font-bold uppercase text-zinc-500">
+        <div className="mb-5 text-xs font-bold uppercase text-zinc-500">
           Companies on the Same Industry
-        </h3>
-        {peersToGet.length > 0 &&
-          (peersProfilesAndQuotesIsFetching ? (
-            <div className="space-x-3 text-right text-xs">Loading...</div>
-          ) : (
-            <div className="space-x-3 text-right text-xs text-slate-500">
-              <button onClick={() => loadMorePeers()}>See more</button>
-              <button onClick={() => loadMorePeers(peersToGet.length)}>
-                See all
-              </button>
-            </div>
-          ))}
+        </div>
+        {options}
       </div>
       <div
         className={`grid grid-cols-1 gap-x-3 xl:grid-cols-1 2xl:grid-cols-2 ${
@@ -172,30 +221,14 @@ export default function RelatedTickers({ symbol }) {
             : "md:grid-cols-1 2xl:grid-cols-1"
         }`}
       >
-        <div className="grid grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] gap-2 border-b pb-1.5 text-right text-xs md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] xl:grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr]">
-          <div className="w-10 pl-2 text-left">Company</div>
-          <div>Current</div>
-          <div>Change</div>
-          <div className="md:pr-2 xl:pr-0">
-            % <span className="md:hidden xl:inline">Change</span>
+        {Object.keys(relatedTickers).length > 0 && (
+          <div className="grid grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] gap-2 border-b pb-1.5 text-right text-xs md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] xl:grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr]">
+            <Header />
           </div>
-          <div className="pr-2 md:hidden xl:block">
-            <span className="hidden xl:inline">Market Cap</span>
-            <span className="xl:hidden">Mkt. Cap</span>
-          </div>
-        </div>
+        )}
         {Object.keys(relatedTickers).length > 1 && (
           <div className="hidden grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] gap-2 border-b pb-1.5 text-right text-xs md:grid md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] xl:hidden xl:grid-cols-[1.8fr_1.2fr_1.2fr_1.2fr_1.5fr] 2xl:grid">
-            <div className="w-10 pl-2 text-left ">Company</div>
-            <div>Current</div>
-            <div>Change</div>
-            <div className="md:pr-2 xl:pr-0">
-              % <span className="md:hidden xl:inline">Change</span>
-            </div>
-            <div className="pr-2 md:hidden xl:block">
-              <span className="hidden xl:inline">Market Cap</span>
-              <span className="xl:hidden">Mkt. Cap</span>
-            </div>
+            <Header />
           </div>
         )}
         {Object.keys(relatedTickers).map((symbol) => {

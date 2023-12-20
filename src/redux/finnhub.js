@@ -14,113 +14,136 @@ export const finnhubApi = createApi({
     getProfile: builder.query({
       query: (symbol) => `stock/profile2?symbol=${symbol}&token=${TOKEN}`,
     }),
-    getPeers: builder.query({
-      query: (params) =>
-        `stock/peers?symbol=${params.symbol}&grouping=${params.grouping}&token=${TOKEN}`,
-    }),
     getMarketNews: builder.query({
       query: () => `news?category=general&token=${TOKEN}`,
     }),
     getCompanyNews: builder.query({
-      query: (param) =>
-        `company-news?symbol=${param.symbol}&from=${param.from}&to=${param.to}&token=${TOKEN}`,
+      query: (params) =>
+        `company-news?symbol=${params.symbol}&from=${params.from}&to=${params.to}&token=${TOKEN}`,
     }),
     getBasicFinancials: builder.query({
       query: (symbol) =>
         `stock/metric?symbol=${symbol}&metric=all&token=${TOKEN}`,
     }),
-    getProfilesAndQuotes: builder.query({
-      queryFn: async (arg, queryApi) => {
-        const data = {};
-        for (const symbol of arg) {
-          const profile = await queryApi.dispatch(
-            finnhubApi.endpoints.getProfile.initiate(symbol),
-          );
-          const quote = await queryApi.dispatch(
-            finnhubApi.endpoints.getQuote.initiate(symbol),
-          );
-
-          if (profile?.error?.status === 429 || quote?.error?.status === 429)
-            return { error: { status: 429 } };
-
-          if (Object.keys(profile.data).length === 0 && quote.c === 0) continue;
-
-          data[symbol] = {
-            profile: profile.data,
-            quote: quote.data,
-          };
-        }
-        return { data };
-      },
+    getPeers: builder.query({
+      query: (params) =>
+        `stock/peers?symbol=${params.symbol}&grouping=${params.grouping}&token=${TOKEN}`,
     }),
     getProfileAndQuote: builder.query({
       queryFn: async (arg, queryApi) => {
+        const symbol = arg;
+
         const profile = await queryApi.dispatch(
-          finnhubApi.endpoints.getProfile.initiate(arg),
-        );
-        const quote = await queryApi.dispatch(
-          finnhubApi.endpoints.getQuote.initiate(arg),
+          finnhubApi.endpoints.getProfile.initiate(symbol),
         );
 
+        if (profile?.error?.status === 429 || profile?.error?.status === 403) {
+          return { error: profile.error };
+        }
+        if (Object.keys(profile.data).length === 0) {
+          return {
+            error: { status: 404, data: { error: "Symbol not found." } },
+          };
+        }
+
+        const quote = await queryApi.dispatch(
+          finnhubApi.endpoints.getQuote.initiate(symbol),
+        );
+
+        if (quote?.error?.status === 429) {
+          return { error: quote.error };
+        }
+        if (quote.data.c === 0) {
+          return {
+            error: { status: 404, data: { error: "Symbol not found." } },
+          };
+        }
+
+        const profileAndQuote = {
+          profile: profile.data,
+          quote: quote.data,
+        };
+
         return {
-          data: {
-            profile: profile.data ? profile.data : profile.error,
-            quote: quote.data ? quote.data : quote.error,
-          },
+          data: profileAndQuote,
         };
       },
     }),
-    getPeersProfilesAndQuotes: builder.query({
-      queryFn: async (args, queryApi) => {
-        const { symbol, peers, limit } = args;
+    getProfilesAndQuotes: builder.query({
+      queryFn: async (arg, queryApi) => {
+        const symbols = arg;
+        const available = {};
+        const unavailable = {};
 
-        const data = {
-          peers: {},
-          unavailablePeers: [],
-        };
-        for (const peer of peers) {
-          if (peer === symbol) {
-            data.unavailablePeers.push(peer);
+        for (const symbol of symbols) {
+          const profileAndQuote = await queryApi.dispatch(
+            finnhubApi.endpoints.getProfileAndQuote.initiate(symbol),
+          );
+
+          if (profileAndQuote?.isError) {
+            if (profileAndQuote.error.status === 429) {
+              return { error: profileAndQuote.error };
+            }
+            unavailable[symbol] = profileAndQuote.error;
             continue;
           }
 
-          const profile = await queryApi.dispatch(
-            finnhubApi.endpoints.getProfile.initiate(peer),
-          );
-          const quote = await queryApi.dispatch(
-            finnhubApi.endpoints.getQuote.initiate(peer),
-          );
-
-          if (profile?.error?.status === 429 || quote?.error?.status === 429)
-            return { error: { status: 429 } };
-
-          if (Object.keys(profile.data).length === 0 || quote.data.c === 0) {
-            data.unavailablePeers.push(peer);
-            continue;
-          }
-
-          data.peers[peer] = {
-            profile: profile.data,
-            quote: quote.data,
-          };
-
-          if (Object.keys(data.peers).length === limit) break;
+          available[symbol] = profileAndQuote.data;
         }
 
-        return { data };
+        const profilesAndQuotes = {
+          available,
+          unavailable,
+        };
+
+        return { data: profilesAndQuotes };
+      },
+    }),
+    getProfilesAndQuotesWithLimit: builder.query({
+      queryFn: async (args, queryApi) => {
+        const { peers, limit } = args;
+        const available = {};
+        const unavailable = {};
+
+        for (const peer of peers) {
+          const profileAndQuote = await queryApi.dispatch(
+            finnhubApi.endpoints.getProfileAndQuote.initiate(peer),
+          );
+
+          if (profileAndQuote?.isError) {
+            if (profileAndQuote.error.status === 429) {
+              return { error: profileAndQuote.error };
+            }
+            unavailable[peer] = profileAndQuote.error;
+            continue;
+          }
+
+          available[peer] = profileAndQuote.data;
+          if (Object.keys(available).length === limit) {
+            break;
+          }
+        }
+
+        const profilesAndQuotes = {
+          available,
+          unavailable,
+        };
+
+        return { data: profilesAndQuotes };
       },
     }),
   }),
 });
 
 export const {
-  useGetPeersQuery,
-  useGetProfilesAndQuotesQuery,
-  useLazyGetProfilesAndQuotesQuery,
-  useGetProfileAndQuoteQuery,
+  useGetProfileQuery,
   useGetMarketNewsQuery,
   useGetCompanyNewsQuery,
   useGetBasicFinancialsQuery,
-  useLazyGetPeersProfilesAndQuotesQuery,
-  useGetProfileQuery,
+  useGetPeersQuery,
+  useGetProfileAndQuoteQuery,
+  useGetProfilesAndQuotesQuery,
+  useLazyGetProfileAndQuoteQuery,
+  useLazyGetProfilesAndQuotesQuery,
+  useLazyGetProfilesAndQuotesWithLimitQuery,
 } = finnhubApi;
