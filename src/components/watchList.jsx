@@ -130,19 +130,19 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
     content = Object.keys(watchListItems).map((symbol) => {
       const name = watchListItems[symbol].profile.name;
       const logo = watchListItems[symbol].profile.logo;
-      const close = watchListItems[symbol].quote.pc.toFixed(3);
+      const close = watchListItems[symbol].quote.pc.toFixed(2);
 
-      let current = watchListItems[symbol].quote.c.toFixed(3);
+      let current = watchListItems[symbol].quote.c.toFixed(2);
 
       if (lastJsonMessage?.type === "trade") {
         const trade = lastJsonMessage.data.find((trade) => trade.s === symbol);
         if (trade) {
-          current = trade.p.toFixed(3);
+          current = trade.p.toFixed(2);
         }
       }
 
-      const change = (current - close).toFixed(3);
-      const percentChange = ((change / close) * 100).toFixed(3);
+      const change = (current - close).toFixed(2);
+      const percentChange = ((change / close) * 100).toFixed(2);
 
       return (
         <WatchListItem
@@ -160,10 +160,13 @@ export default function WatchList({ symbols, topAndTrendingTickers }) {
   }
 
   return (
-    <div className="w-full rounded-lg border border-gray-300 text-[0.8rem] shadow lg:h-[calc(100%-150px)] lg:pt-4">
-      <h2 className="mb-3 hidden px-4 text-2xl font-bold lg:block">
-        Your Watch List
-      </h2>
+    <div className="w-full rounded-lg border text-[0.8rem] shadow lg:h-[calc(100%-155px)] lg:pt-4">
+      <div className="mb-3 hidden items-end justify-between gap-1 px-4 lg:flex">
+        <h2 className="text-2xl font-bold">Your Watch List</h2>
+        <span className="mb-0.5 hidden text-xs text-zinc-400 xl:inline">
+          <span className="text-[0.7rem]">&#9432;</span> Currency in USD.
+        </span>
+      </div>
       <form onSubmit={addSymbol} className="mb-3 hidden w-full px-4 lg:block">
         <div className="relative flex">
           <input
@@ -265,7 +268,7 @@ function WatchListItem({
           </div>
           <div className="w-full">
             <p className="mr-3 font-bold">{symbol}</p>
-            <p className="hidden w-28 overflow-hidden overflow-ellipsis whitespace-nowrap xl:block">
+            <p className="hidden w-36 overflow-hidden overflow-ellipsis whitespace-nowrap xl:block">
               {name}
             </p>
           </div>
@@ -281,7 +284,9 @@ function WatchListItem({
           <span className="invisible">&#41;</span>
         </div>
         <p className="hidden text-right lg:block">
-          {percentChange}% ({change})
+          {change > 0 ? "+" : ""}
+          {percentChange}% ({change > 0 ? "+" : ""}
+          {change})
         </p>
       </div>
     </div>

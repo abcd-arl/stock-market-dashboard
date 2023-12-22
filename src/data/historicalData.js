@@ -1,4 +1,4 @@
-export const response = {
+export const historicalData = {
   "Meta Data": {
     "1. Information": "Daily Time Series with Splits and Dividend Events",
     "2. Symbol": "IBM",

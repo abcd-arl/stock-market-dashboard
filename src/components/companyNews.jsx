@@ -48,7 +48,7 @@ export default function CompanyNews({ symbol }) {
   } else if (isSuccessNews && news.length === 0) {
     content = (
       <div className="w-full py-2 text-sm">
-        <h1 className="my-4 text-2xl font-bold">Company News</h1>
+        <h1 className="mb-4 mt-1 text-2xl font-bold">Company News</h1>
         <p>No news found.</p>
       </div>
     );
@@ -71,7 +71,7 @@ export default function CompanyNews({ symbol }) {
 
   return (
     <div className="w-full py-2">
-      <h1 className="my-4 text-2xl font-bold">Company News</h1>
+      <h1 className="mb-4 mt-1 text-2xl font-bold">Company News</h1>
       <div className="last-two-children grid grid-cols-1 gap-x-10 gap-y-3 md:grid-cols-2">
         {content}
       </div>

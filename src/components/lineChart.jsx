@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 import "chartjs-adapter-date-fns";
 import { Line } from "react-chartjs-2";
-// import { historicalData as ts } from "../data/historicalData";
+import { historicalData as ts } from "../data/historicalData";
 import SkeletonLoading from "./skeletonLoading";
 import { useGetDailyHistoricalDataQuery } from "../redux/alphavantage";
 import Error from "../pages/error";
@@ -29,11 +29,14 @@ ChartJS.register(
 );
 
 export default function LineChart({ symbol }) {
-  const {
-    data: ts,
-    isLoading,
-    isFetching,
-  } = useGetDailyHistoricalDataQuery(symbol);
+  // const {
+  //   data: ts,
+  //   isLoading,
+  //   isFetching,
+  // } = useGetDailyHistoricalDataQuery(symbol);
+
+  const isLoading = false;
+  const isFetching = false;
 
   const [numOfMonths, setNumOfMonths] = useState(6);
   useEffect(() => {
@@ -42,7 +45,7 @@ export default function LineChart({ symbol }) {
 
   if (ts?.Information) {
     return (
-      <div className="mt-8 flex h-[270px] w-full flex-col items-center justify-center rounded-md border-2 border-red-200 pb-5 text-sm">
+      <div className="mb-5 mt-8 flex h-[270px] w-full flex-col items-center justify-center rounded-md border-2 border-red-200 pb-5 text-sm">
         <span className="mb-4 text-2xl">:'(</span>
         <p>Sorry, you have reached the maximum API call limit.</p>
         <p>Please try again tomorrow.</p>
@@ -52,8 +55,8 @@ export default function LineChart({ symbol }) {
 
   if (isLoading || isFetching) {
     return (
-      <div className="w-full rounded-md">
-        <div className="flex justify-end gap-2 pb-4 text-sm">
+      <div className="mb-5 w-full rounded-md">
+        <div className="flex justify-end gap-1.5 pb-4 text-sm">
           {Array(7)
             .fill()
             .map((_, index) => (
@@ -203,8 +206,8 @@ export default function LineChart({ symbol }) {
   };
 
   return (
-    <div className="w-full rounded-md">
-      <div className="flex justify-end gap-2 text-sm">
+    <div className="mb-5 w-full rounded-md">
+      <div className="flex justify-end gap-1.5 text-sm">
         <button
           disabled
           className="cursor-not-allowed px-3 py-1 text-xs text-gray-400"

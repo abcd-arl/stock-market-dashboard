@@ -70,7 +70,7 @@ export default function TricketTable({ title, symbols }) {
             <SkeletonLoading className="ml-auto h-2 w-16" />
           </td>
           <td className="hidden lg:table-cell lg:pr-3 xl:pr-5 2xl:pr-0">
-            <SkeletonLoading className="ml-auto h-2 w-16" />
+            <SkeletonLoading className="ml-auto h-2 w-28" />
           </td>
           <td className="hidden pl-7 pr-5 font-sans 2xl:table-cell 2xl:pr-5">
             <SkeletonLoading className="h-2 w-24" />
@@ -82,26 +82,26 @@ export default function TricketTable({ title, symbols }) {
       const name = profilesAndQuotes.available[symbol].profile.name;
       const logo = profilesAndQuotes.available[symbol].profile.logo;
 
-      const high = profilesAndQuotes.available[symbol].quote.h.toFixed(3);
-      const low = profilesAndQuotes.available[symbol].quote.l.toFixed(3);
-      const open = profilesAndQuotes.available[symbol].quote.o.toFixed(3);
-      const close = profilesAndQuotes.available[symbol].quote.pc.toFixed(3);
+      const high = profilesAndQuotes.available[symbol].quote.h.toFixed(2);
+      const low = profilesAndQuotes.available[symbol].quote.l.toFixed(2);
+      const open = profilesAndQuotes.available[symbol].quote.o.toFixed(2);
+      const close = profilesAndQuotes.available[symbol].quote.pc.toFixed(2);
 
-      let current = profilesAndQuotes.available[symbol].quote.c.toFixed(3);
+      let current = profilesAndQuotes.available[symbol].quote.c.toFixed(2);
 
       if (lastJsonMessage?.type === "trade") {
         const trade = lastJsonMessage.data.find((trade) => trade.s === symbol);
         if (trade) {
-          current = trade.p.toFixed(3);
+          current = trade.p.toFixed(2);
         }
       }
 
-      const change = (current - close).toFixed(3);
-      const percentChange = ((change / close) * 100).toFixed(3);
-
+      const change = (current - close).toFixed(2);
+      const percentChange = ((change / close) * 100).toFixed(2);
       const marketCap = formatMarketCap(
         profilesAndQuotes.available[symbol].profile.marketCapitalization,
       );
+      const currency = profilesAndQuotes.available[symbol].profile.currency;
       const industry =
         profilesAndQuotes.available[symbol].profile.finnhubIndustry;
 
@@ -117,7 +117,7 @@ export default function TricketTable({ title, symbols }) {
               </div>
               <div className="flex w-full gap-2">
                 <h3 className="font-bold">{symbol}</h3>
-                <p className="hidden w-full overflow-hidden overflow-ellipsis whitespace-nowrap 2xl:block 2xl:w-40">
+                <p className="mr-1 hidden w-full overflow-hidden overflow-ellipsis whitespace-nowrap 2xl:block">
                   {name}
                 </p>
               </div>
@@ -160,7 +160,7 @@ export default function TricketTable({ title, symbols }) {
             {close}
           </td>
           <td className="hidden lg:table-cell lg:pr-3 xl:pr-5 2xl:pr-0">
-            {marketCap}
+            {marketCap} <span className="font-sans">{currency}</span>
           </td>
           <td className="hidden pl-7 pr-5 text-left font-sans 2xl:table-cell 2xl:pr-5">
             {industry}
@@ -172,7 +172,13 @@ export default function TricketTable({ title, symbols }) {
 
   return (
     <div className="w-full overflow-auto rounded-md border border-gray-300 px-2 py-6 shadow">
-      <h2 className="mb-1 pl-3 text-2xl font-bold xl:pl-5">{title}</h2>{" "}
+      <div className="mb-1 flex items-end justify-between gap-4 px-3 sm:items-center xl:px-5">
+        <h2 className="inline shrink-0 text-2xl font-bold">{title}</h2>
+        <span className="mb-0.5 text-right text-[0.7rem] text-zinc-400 sm:mb-0 sm:text-xs">
+          <span className="text-[0.7rem]">&#9432;</span> Currency in USD except
+          where otherwise noted.
+        </span>
+      </div>
       {profilesAndQuotesIsError && profilesAndQuotesError.status === 429 ? (
         <div className="flex h-60 flex-col items-center justify-center p-2 text-sm">
           <p className="text-center">
@@ -190,16 +196,16 @@ export default function TricketTable({ title, symbols }) {
       ) : (
         <table className="w-full table-fixed border-collapse overflow-ellipsis text-right text-sm">
           <colgroup>
-            <col className="w-[5.5rem] 2xl:w-48" />
-            <col className="w-[5.5rem]" />
-            <col className="w-[5.5rem]" />
-            <col className="w-[5.5rem]" />
-            <col className="hidden w-[5.5rem] sm:table-column sm:pr-0 md:pr-0 lg:pr-0" />
-            <col className="hidden w-[5.5rem] sm:table-column sm:pr-3 md:pr-0 lg:pr-0" />
-            <col className="hidden w-[5.5rem] md:table-column md:pr-0 lg:hidden xl:table-column" />
-            <col className="hidden w-[5.5rem] md:table-column md:pr-3 lg:hidden xl:table-column" />
-            <col className="hidden w-[5.5rem] lg:table-column lg:pr-3 xl:pr-5 2xl:pr-0" />
-            <col className="hidden w-36 text-left 2xl:table-column 2xl:pr-5" />
+            <col className="w-[5rem] 2xl:w-44" />
+            <col className="w-[4rem]" />
+            <col className="w-[4rem]" />
+            <col className="w-[4rem]" />
+            <col className="hidden w-[4rem] sm:table-column sm:pr-0 md:pr-0 lg:pr-0" />
+            <col className="hidden w-[4rem] sm:table-column sm:pr-3 md:pr-0 lg:pr-0" />
+            <col className="hidden w-[4rem] md:table-column md:pr-0 lg:hidden xl:table-column" />
+            <col className="hidden w-[4rem] md:table-column md:pr-3 lg:hidden xl:table-column" />
+            <col className="hidden w-20 lg:table-column lg:w-24 lg:pr-3 xl:pr-5 2xl:w-20 2xl:pr-0" />
+            <col className="hidden w-28 text-left 2xl:table-column 2xl:pr-5" />
           </colgroup>
           <thead>
             <tr className="text-right font-semibold text-zinc-400">
