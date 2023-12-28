@@ -62,7 +62,7 @@ export default function MarketNews() {
             </p>
             <p className="text-sm">{article.summary}</p>
           </div>
-          <div className="h-28 shrink-0 basis-48">
+          <div className="h-28 shrink-0 basis-48 bg-gray-200">
             <img src={article.image} className="h-full w-full object-cover" />
           </div>
         </div>

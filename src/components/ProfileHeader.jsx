@@ -40,7 +40,8 @@ export default function ProfileHeader({ symbol, data }) {
       <div className="font-mono text-sm">
         <div className="mb-0.5 flex items-end gap-2">
           <div className="text-3xl font-bold sm:text-5xl xl:text-4xl 2xl:text-5xl">
-            {current} <span className="font-sans">USD</span>
+            {current}
+            <span className="font-sans"> USD</span>
           </div>
           <div
             className={`text-2xl ${
@@ -52,7 +53,7 @@ export default function ProfileHeader({ symbol, data }) {
             {percentChange}%)
           </div>
         </div>
-        <div className="ml-1 flex gap-2.5">
+        <div className="flex gap-2.5 text-xs sm:text-sm">
           <div>
             <span className="font-sans text-zinc-500">Low - High: </span>
             {low}-{high}

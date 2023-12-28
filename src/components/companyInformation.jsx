@@ -10,11 +10,17 @@ export default function CompanyInformation({ symbol }) {
     data: profileAndQuote,
     isLoading: profileAndQuoteIsLoading,
     isFetching: profileAndQuoteIsFetching,
+    isError: profileAndQuoteIsError,
+    error: profileAndQuoteError,
+    refetch: refetchProfileAndQuote,
   } = useGetProfileAndQuoteQuery(symbol);
   const {
     data: basicFinancials,
     isLoading: basicFinancialsIsLoading,
     isFetching: basicFinancialsIsFetching,
+    isError: basicFinancialsIsError,
+    error: basicFinancialsError,
+    refetch: refetchBasicFinancials,
   } = useGetBasicFinancialsQuery(symbol);
 
   if (
@@ -24,7 +30,7 @@ export default function CompanyInformation({ symbol }) {
     basicFinancialsIsFetching
   ) {
     return (
-      <div className="pt-4 2xl:w-[22rem]">
+      <div className="py-4 2xl:w-[22rem]">
         <div className="hidden pb-2 md:block xl:hidden">
           <div className="mb-4 pt-3">
             <SkeletonLoading className="h-2 w-24" />
@@ -40,7 +46,7 @@ export default function CompanyInformation({ symbol }) {
             <SkeletonLoading className="h-2 w-52" />
           </div>
         </div>
-        <div className="my-3 flex flex-col gap-2 md:flex-row xl:flex-col">
+        <div className="mt-3 flex flex-col gap-2 md:flex-row xl:flex-col">
           <div className="basis-1/2 rounded-md border px-5 pb-7 pt-4">
             <ul className="w-full">
               {Array(5)
@@ -99,8 +105,32 @@ export default function CompanyInformation({ symbol }) {
     );
   }
 
+  if (
+    (profileAndQuoteIsError || basicFinancialsIsError) &&
+    (profileAndQuoteError.status == 429 || basicFinancialsError.status == 429)
+  ) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center p-2">
+        <p className="text-center">
+          You have reached the maximum API call limit. Please try again after a
+          minute. Click{" "}
+          <span
+            className="cursor-pointer text-blue-500"
+            onClick={() => {
+              refetchProfileAndQuote();
+              refetchBasicFinancials();
+            }}
+          >
+            here
+          </span>{" "}
+          to refetch.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="py-4 2xl:w-[22rem]">
+    <div className="py-2 2xl:w-[22rem]">
       <div className="hidden pb-2 md:block xl:hidden">
         <p className="mb-4 pt-3 text-xs font-semibold uppercase text-zinc-500">
           About {profileAndQuote.profile.name}
@@ -114,7 +144,7 @@ export default function CompanyInformation({ symbol }) {
           lacus et eleifend semper.
         </p>
       </div>
-      <div className="my-3 flex flex-col gap-2 md:flex-row xl:flex-col">
+      <div className="mt-3 flex flex-col gap-2 md:flex-row xl:flex-col">
         <div className="basis-1/2 rounded-md border px-5 pb-7 pt-4">
           <ul className="w-full">
             <li className="flex items-start justify-between border-b py-3 text-xs last:border-b-0 last:pb-1">

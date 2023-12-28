@@ -15,7 +15,6 @@ import { Line } from "react-chartjs-2";
 import { historicalData as ts } from "../data/historicalData";
 import SkeletonLoading from "./skeletonLoading";
 import { useGetDailyHistoricalDataQuery } from "../redux/alphavantage";
-import Error from "../pages/error";
 
 ChartJS.register(
   TimeSeriesScale,
@@ -29,14 +28,14 @@ ChartJS.register(
 );
 
 export default function LineChart({ symbol }) {
-  // const {
-  //   data: ts,
-  //   isLoading,
-  //   isFetching,
-  // } = useGetDailyHistoricalDataQuery(symbol);
+  const {
+    data: ts,
+    isLoading,
+    isFetching,
+  } = useGetDailyHistoricalDataQuery(symbol);
 
-  const isLoading = false;
-  const isFetching = false;
+  // const isLoading = false;
+  // const isFetching = false;
 
   const [numOfMonths, setNumOfMonths] = useState(6);
   useEffect(() => {

@@ -208,7 +208,7 @@ export default function TricketTable({ title, symbols }) {
             <col className="hidden w-28 text-left 2xl:table-column 2xl:pr-5" />
           </colgroup>
           <thead>
-            <tr className="text-right font-semibold text-zinc-400">
+            <tr className="text-right font-medium text-zinc-400">
               <th className="py-2.5 pl-3 text-left 2xl:pl-5">Company</th>
               <th>Current</th>
               <th className="sm:pr-0">Change</th>

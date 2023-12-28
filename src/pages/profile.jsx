@@ -3,7 +3,8 @@ import Spinner from "../assets/icons8-spinner.gif";
 import CompanyInformation from "../components/CompanyInformation";
 import LineChart from "../components/LineChart";
 import CompanyNews from "../components/CompanyNews";
-import RelatedTickers from "../components/relatedTickers";
+import RelatedTickersByIndustry from "../components/RelatedTickersByIndustry";
+import RelatedTickersBySector from "../components/RelatedTickersBySector";
 import ProfileHeader from "../components/ProfileHeader";
 import Error from "./error";
 
@@ -21,11 +22,11 @@ export default function Profile({ symbol }) {
     );
 
   if (isError && error.status == 403) return <Error type={"403"} />;
-  if (isError && error.status == 429) return <Error type={"409"} />;
+  if (isError && error.status == 429) return <Error type={"429"} />;
   if (Object.keys(data).length === 0) return <Error type={"404"} />;
 
   return (
-    <div className="relative w-full rounded-md border-l border-t border-gray-300 py-2 pl-3 md:pr-1">
+    <div className="relative w-full rounded-md border-l border-t border-gray-300 py-5 pl-3 md:pr-1">
       <div className="flex flex-col gap-2 xl:flex-row">
         <div className="w-[100%] px-3 xl:w-[65%] 2xl:basis-full">
           <div className="mb-4 flex items-end gap-2 md:mb-0 lg:mb-3 2xl:-mb-0.5">
@@ -38,7 +39,10 @@ export default function Profile({ symbol }) {
             <ProfileHeader symbol={symbol} data={data} />
           </div>
           <LineChart key={"linechart" + symbol} symbol={symbol} />
-          <RelatedTickers key={"related tickers" + symbol} symbol={symbol} />
+          <RelatedTickersByIndustry
+            key={"related tickers" + symbol}
+            symbol={symbol}
+          />
           <div className="hidden xl:block">
             <CompanyNews symbol={symbol} />
           </div>
@@ -47,8 +51,9 @@ export default function Profile({ symbol }) {
             <CompanyNews symbol={symbol} />
           </div>
         </div>
-        <div className="hidden xl:block xl:w-[35%] 2xl:w-fit">
+        <div className="hidden xl:block xl:w-[35%] 2xl:w-96">
           <CompanyInformation symbol={symbol} />
+          <RelatedTickersBySector symbol={symbol} />
         </div>
       </div>
     </div>

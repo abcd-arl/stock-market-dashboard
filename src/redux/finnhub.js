@@ -29,6 +29,36 @@ export const finnhubApi = createApi({
       query: (params) =>
         `stock/peers?symbol=${params.symbol}&grouping=${params.grouping}&token=${TOKEN}`,
     }),
+    getProfiles: builder.query({
+      queryFn: async (arg, queryApi) => {
+        const symbols = arg;
+        const available = {};
+        const unavailable = {};
+
+        for (const symbol of symbols) {
+          const profile = await queryApi.dispatch(
+            finnhubApi.endpoints.getProfile.initiate(symbol),
+          );
+
+          if (profile?.isError) {
+            if (profile.error.status === 429) {
+              return { error: profile.error };
+            }
+            unavailable[symbol] = profile.error;
+            continue;
+          }
+
+          available[symbol] = profile.data;
+        }
+
+        const profiles = {
+          available,
+          unavailable,
+        };
+
+        return { data: profiles };
+      },
+    }),
     getProfileAndQuote: builder.query({
       queryFn: async (arg, queryApi) => {
         const symbol = arg;
@@ -140,6 +170,7 @@ export const finnhubApi = createApi({
 
 export const {
   useGetProfileQuery,
+  useGetProfilesQuery,
   useGetMarketNewsQuery,
   useGetCompanyNewsQuery,
   useGetBasicFinancialsQuery,

@@ -29,7 +29,7 @@ export default function RelatedTickers({ symbol }) {
       isError: peersProfilesAndQuotesIsError,
       error: peersProfilesAndQuotesError,
     },
-  ] = useLazyGetProfilesAndQuotesWithLimitQuery({});
+  ] = useLazyGetProfilesAndQuotesWithLimitQuery();
   const [shouldComponentBeLoading, setShouldComponentBeLoading] =
     useState(true);
   const [shouldItemsBeLoading, setShouldItemsBeLoading] = useState(false);
@@ -70,10 +70,15 @@ export default function RelatedTickers({ symbol }) {
 
   const loadMorePeers = (limit = 2) => {
     setShouldItemsBeLoading(true);
-    getTickersProfileAndQuote({
-      peers: peersToGet,
-      limit,
-    });
+    if (peersToGet.length === 0) {
+      refetchPeers();
+      shouldComponentBeLoading(true);
+    } else {
+      getTickersProfileAndQuote({
+        peers: peersToGet,
+        limit,
+      });
+    }
   };
 
   const SkeletonHeader = () => (
@@ -207,7 +212,7 @@ export default function RelatedTickers({ symbol }) {
             return (
               <div
                 key={symbol}
-                className="grid grid-cols-[1.5fr_1.2fr_1.2fr_1.2fr_1.8fr] gap-2 border-b py-1.5 font-mono hover:bg-gray-100 md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] md:text-xs xl:grid-cols-[1.5fr_1.2fr_1.2fr_1.2fr_2fr] 2xl:text-xs"
+                className="grid grid-cols-[1.5fr_1.2fr_1.2fr_1.2fr_1.8fr] gap-2 border-b py-1.5 font-mono hover:bg-gray-50 md:grid-cols-[2fr_1.5fr_1.5fr_1.5fr] md:text-xs xl:grid-cols-[1.5fr_1.2fr_1.2fr_1.2fr_2fr] 2xl:text-xs"
               >
                 <div className="pl-2">
                   <Link
