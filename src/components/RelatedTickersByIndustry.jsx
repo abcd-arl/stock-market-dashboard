@@ -7,7 +7,7 @@ import {
 import { formatMarketCap } from "../utils/format";
 import SkeletonLoading from "./skeletonLoading";
 
-export default function RelatedTickers({ symbol }) {
+export default function RelatedTickersByIndustry({ symbol }) {
   const [relatedTickers, setRelatedTickers] = useState(null);
   const [peersToGet, setPeersToGet] = useState([]);
   const {
@@ -180,7 +180,7 @@ export default function RelatedTickers({ symbol }) {
     content = (
       <>
         <div
-          className={`grid grid-cols-1 gap-x-3 xl:grid-cols-1 2xl:grid-cols-2 ${
+          className={`grid grid-cols-1 gap-x-3 xl:grid-cols-1 ${
             Object.keys(relatedTickers).length > 1
               ? "md:grid-cols-2 2xl:grid-cols-2"
               : "md:grid-cols-1 2xl:grid-cols-1"

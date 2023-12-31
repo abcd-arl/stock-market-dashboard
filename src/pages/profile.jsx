@@ -1,11 +1,10 @@
 import { Link } from "wouter";
 import Spinner from "../assets/icons8-spinner.gif";
 import CompanyInformation from "../components/CompanyInformation";
-import LineChart from "../components/LineChart";
 import CompanyNews from "../components/CompanyNews";
-import RelatedTickersByIndustry from "../components/RelatedTickersByIndustry";
 import RelatedTickersBySector from "../components/RelatedTickersBySector";
 import ProfileHeader from "../components/ProfileHeader";
+import HistoricalPrices from "../components/HistoricalPrices";
 import Error from "./error";
 
 import { useGetProfileAndQuoteQuery } from "../redux/finnhub";
@@ -38,11 +37,7 @@ export default function Profile({ symbol }) {
             </Link>
             <ProfileHeader symbol={symbol} data={data} />
           </div>
-          <LineChart key={"linechart" + symbol} symbol={symbol} />
-          <RelatedTickersByIndustry
-            key={"related tickers" + symbol}
-            symbol={symbol}
-          />
+          <HistoricalPrices key={symbol} symbol={symbol} />
           <div className="hidden xl:block">
             <CompanyNews symbol={symbol} />
           </div>

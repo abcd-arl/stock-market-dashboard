@@ -33,7 +33,7 @@ export default function RelatedTickersBySector({ symbol }) {
       .map((_, index) => (
         <li
           key={index}
-          className="flex items-center gap-2 border-b px-3 py-2.5 last:border-b-0"
+          className="flex items-center gap-2 border-b px-2 py-2.5 last:border-b-0"
         >
           <div className="h-6 basis-6 rounded-full bg-gray-200">
             <SkeletonLoading className="h-6 w-6 rounded-full" />
@@ -63,6 +63,16 @@ export default function RelatedTickersBySector({ symbol }) {
           </span>{" "}
           to refetch.
         </p>
+      </div>
+    );
+  } else if (
+    isSuccessProfiles &&
+    isSuccessPeers &&
+    Object.keys(profiles.available).length === 0
+  ) {
+    content = (
+      <div className="px-2">
+        <p className="">No available companies found.</p>
       </div>
     );
   } else {

@@ -34,7 +34,7 @@ export default function ProfileHeader({ symbol, data }) {
   return (
     <div className="ml-7 w-full">
       <div className="mb-2.5 flex items-end gap-1.5">
-        <h1 className="text-xl font-semibold">{symbol}</h1>
+        <h1 className="text-xl font-bold">{symbol}</h1>
         <h2 className="text-xl md:text-xl">{data.profile.name}</h2>
       </div>
       <div className="font-mono text-sm">
