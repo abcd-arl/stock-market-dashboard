@@ -46,12 +46,7 @@ export default function CompanyNews({ symbol }) {
       </div>
     );
   } else if (isSuccessNews && news.length === 0) {
-    content = (
-      <div className="w-full py-2 text-sm">
-        <h1 className="mb-4 mt-1 text-2xl font-bold">Company News</h1>
-        <p>No news found.</p>
-      </div>
-    );
+    content = <p className="text-sm">No news found.</p>;
   } else {
     content = news.map((article) => (
       <a
