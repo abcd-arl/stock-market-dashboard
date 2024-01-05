@@ -107,7 +107,7 @@ export default function CompanyInformation({ symbol }) {
 
   if (
     (profileAndQuoteIsError || basicFinancialsIsError) &&
-    (profileAndQuoteError.status == 429 || basicFinancialsError.status == 429)
+    (profileAndQuoteError?.status == 429 || basicFinancialsError?.status == 429)
   ) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-2">
@@ -152,7 +152,9 @@ export default function CompanyInformation({ symbol }) {
                 52-Week Range
               </span>
               <span className="block w-fit text-right font-semibold">
-                {`${basicFinancials.metric["52WeekLow"]} ${profileAndQuote.profile?.currency} - ${basicFinancials.metric["52WeekHigh"]} ${profileAndQuote.profile?.currency}`}{" "}
+                {basicFinancials?.metric["52WeekLow"] &&
+                  basicFinancials?.metric["52WeekHigh"] &&
+                  `${basicFinancials?.metric["52WeekLow"]} ${profileAndQuote.profile?.currency} - ${basicFinancials?.metric["52WeekHigh"]} ${profileAndQuote.profile?.currency}`}{" "}
               </span>
             </li>
             <li className="flex items-start justify-between border-b py-3 text-xs last:border-b-0 last:pb-1">
@@ -160,8 +162,12 @@ export default function CompanyInformation({ symbol }) {
                 Market Capitalization
               </span>
               <span className="block w-fit text-right font-semibold">
-                {formatMarketCap(profileAndQuote.profile?.marketCapitalization)}{" "}
-                {profileAndQuote.profile?.currency}
+                {profileAndQuote.profile?.marketCapitalization &&
+                  formatMarketCap(
+                    profileAndQuote.profile.marketCapitalization,
+                  ) +
+                    " " +
+                    profileAndQuote.profile?.currency}
               </span>
             </li>
             <li className="flex items-start justify-between border-b py-3 text-xs last:border-b-0 last:pb-1">
