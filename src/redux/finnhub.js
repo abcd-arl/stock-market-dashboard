@@ -98,7 +98,6 @@ export const finnhubApi = createApi({
           data: profileAndQuote,
         };
       },
-      refetchOnMountOrArgChange: true,
     }),
     getProfilesAndQuotes: builder.query({
       queryFn: async (arg, queryApi) => {
@@ -129,7 +128,6 @@ export const finnhubApi = createApi({
 
         return { data: profilesAndQuotes };
       },
-      refetchOnMountOrArgChange: true,
     }),
     getProfilesAndQuotesWithLimit: builder.query({
       queryFn: async (args, queryApi) => {
@@ -163,7 +161,6 @@ export const finnhubApi = createApi({
 
         return { data: profilesAndQuotes };
       },
-      refetchOnMountOrArgChange: true,
     }),
   }),
 });
