@@ -27,7 +27,7 @@ function App() {
   ];
 
   return (
-    <div className="relative m-auto flex max-w-[1700px] flex-col gap-1.5 p-2 text-zinc-700 sm:bg-red-100 md:bg-blue-100 lg:flex-row-reverse lg:bg-green-100 xl:bg-purple-100 2xl:bg-white">
+    <div className="relative m-auto flex max-w-[1700px] flex-col gap-1.5 p-2 text-zinc-700 lg:flex-row-reverse">
       <aside className="sticky top-2 z-10 flex flex-col-reverse justify-start gap-1.5 bg-white lg:max-h-[calc(100vh-1rem)] lg:w-[30%] lg:flex-col xl:basis-96">
         <SearchSymbol />
         <DateTime />
