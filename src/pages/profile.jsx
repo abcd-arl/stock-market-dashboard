@@ -8,10 +8,15 @@ import HistoricalPrices from "../components/HistoricalPrices";
 import Error from "./error";
 
 import { useGetProfileAndQuoteQuery } from "../redux/finnhub";
+import { useEffect } from "react";
 
 export default function Profile({ symbol }) {
-  const { data, isLoading, isFetching, isError, error } =
+  const { data, isLoading, isFetching, isError, error, refetch } =
     useGetProfileAndQuoteQuery(symbol);
+
+  useEffect(() => {
+    refetch();
+  }, [symbol]);
 
   if (isLoading || isFetching)
     return (
@@ -22,7 +27,7 @@ export default function Profile({ symbol }) {
 
   if (isError && error.status == 403) return <Error type={"403"} />;
   if (isError && error.status == 429) return <Error type={"429"} />;
-  if (Object.keys(data).length === 0) return <Error type={"404"} />;
+  if (!data || (isError && error.status == 404)) return <Error type={"404"} />;
 
   return (
     <div className="relative w-full rounded-md border-l border-t border-gray-300 py-5 pl-3 md:pr-1">
