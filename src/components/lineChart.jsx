@@ -38,6 +38,7 @@ export default function LineChart({ symbol }) {
   // const isFetching = false;
 
   const [numOfMonths, setNumOfMonths] = useState(6);
+
   useEffect(() => {
     setNumOfMonths(6);
   }, [symbol]);
@@ -154,7 +155,9 @@ export default function LineChart({ symbol }) {
               ? Math.min(6, Math.ceil(Object.keys(prices).length / 365) + 1)
               : numOfMonths === "all"
                 ? Math.ceil(Object.keys(prices).length / 365) + 1
-                : 10,
+                : numOfMonths == 12
+                  ? 12
+                  : 10,
           maxRotation: 0,
           minRotation: 0,
         },
