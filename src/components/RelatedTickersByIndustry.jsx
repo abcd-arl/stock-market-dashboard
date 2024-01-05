@@ -318,7 +318,7 @@ export default function RelatedTickersByIndustry({ symbol }) {
     <div className="mb-2 text-xs">
       <div className="flex items-end justify-between">
         <div className="mb-5 mt-2 text-xs font-semibold uppercase text-zinc-500">
-          Companies on the Same Industry
+          Companies in the Same Industry
         </div>
         <div>{options}</div>
       </div>

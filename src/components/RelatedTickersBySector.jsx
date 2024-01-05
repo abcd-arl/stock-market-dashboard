@@ -100,7 +100,7 @@ export default function RelatedTickersBySector({ symbol }) {
   return (
     <div className="rounded-md border px-3 pb-5 pt-7 text-xs">
       <h3 className="mx-2 mb-3 font-semibold uppercase text-zinc-500">
-        Companies on the Same Sector
+        Companies in the Same Sector
       </h3>
       <ul>{content}</ul>
     </div>
