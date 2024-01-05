@@ -15,4 +15,7 @@ export const alphavantageAPI = createApi({
   }),
 });
 
-export const { useGetDailyHistoricalDataQuery } = alphavantageAPI;
+export const {
+  useGetDailyHistoricalDataQuery,
+  useLazyGetDailyHistoricalDataQuery,
+} = alphavantageAPI;
